@@ -16,11 +16,9 @@ INJECT_SO="$PASS_DIR/build/libInjectMem1Markers.so"
 RUNTIME_A="$MEM1_ROOT/build/mem1_runtime.a"
 WASM_OPT_BIN="${WASM_OPT_BIN:-wasm-opt}"
 
-LIBPNG_SRC_DIR="${LIBPNG_SRC_DIR:-$ROOT/vendor/libpng}"
-ZLIB_SRC_DIR="${ZLIB_SRC_DIR:-$ROOT/vendor/zlib}"
-LIBPNG_LIB="${LIBPNG_LIB:-$LIBPNG_SRC_DIR/libpng.a}"
-ZLIB_LIB="${ZLIB_LIB:-$ZLIB_SRC_DIR/libz.a}"
-DEFAULT_CFLAGS_LIBPNG="-I$ROOT/support -I$LIBPNG_SRC_DIR -I$ZLIB_SRC_DIR"
+LIBPNG_SRC_DIR="${LIBPNG_SRC_DIR:-$ROOT/vendor/libpng-src}"
+ZLIB_SRC_DIR="${ZLIB_SRC_DIR:-$ROOT/vendor/zlib-src}"
+DEFAULT_CFLAGS_LIBPNG="-DNO_GZCOMPRESS -DNO_GZIP -DPNG_NO_STDIO_SUPPORTED -DPNG_NO_STDIO -I$ROOT/support -I$LIBPNG_SRC_DIR -I$ZLIB_SRC_DIR"
 CFLAGS_LIBPNG_EFFECTIVE="${CFLAGS_LIBPNG:-$DEFAULT_CFLAGS_LIBPNG}"
 
 mkdir -p "$OUT_DIR" "$PASS_DIR/build" "$DEBUG_DIR"
@@ -61,6 +59,7 @@ INTERMEDIATE_FILES=(
 
 cleanup_intermediates() {
   rm -f "${INTERMEDIATE_FILES[@]}"
+  rm -f "$OUT_DIR"/zlib_*.bc "$OUT_DIR"/libpng_*.bc
 }
 trap cleanup_intermediates EXIT
 
@@ -89,12 +88,12 @@ else
   echo "[0b] allocator 빌드 생략 (mem1_runtime.a 존재)"
 fi
 
-if [[ ! -f "$LIBPNG_LIB" ]]; then
-  echo "error: missing libpng static library: $LIBPNG_LIB"
+if [[ ! -f "$LIBPNG_SRC_DIR/png.h" ]] || [[ ! -f "$LIBPNG_SRC_DIR/png.c" ]]; then
+  echo "error: missing libpng C sources under: $LIBPNG_SRC_DIR"
   exit 1
 fi
-if [[ ! -f "$ZLIB_LIB" ]]; then
-  echo "error: missing zlib static library: $ZLIB_LIB"
+if [[ ! -f "$ZLIB_SRC_DIR/zlib.h" ]] || [[ ! -f "$ZLIB_SRC_DIR/deflate.c" ]]; then
+  echo "error: missing zlib C sources under: $ZLIB_SRC_DIR"
   exit 1
 fi
 
@@ -107,12 +106,58 @@ clang-18 --target=wasm32-unknown-unknown -Oz -ffreestanding ${CFLAGS_LIBPNG_EFFE
 clang-18 --target=wasm32-unknown-unknown -Oz -ffreestanding -fno-builtin -emit-llvm \
   -c "$LIBC_SHIM_SRC" -o "$LIBC_SHIM_BC"
 
+echo "=== [01a] libpng/zlib sources -> LLVM bc ==="
+ZLIB_CORE_SRCS=(
+  adler32.c compress.c crc32.c deflate.c infback.c inffast.c
+  inflate.c inftrees.c trees.c uncompr.c zutil.c
+)
+LIBPNG_CORE_SRCS=(
+  png.c pngerror.c pngget.c pngmem.c pngpread.c pngread.c pngrio.c
+  pngrtran.c pngrutil.c pngset.c pngtrans.c pngwio.c pngwrite.c
+  pngwtran.c pngwutil.c
+)
+LIB_BCS=()
+for src in "${ZLIB_CORE_SRCS[@]}"; do
+  bc="$OUT_DIR/zlib_${src%.c}.bc"
+  clang-18 --target=wasm32-unknown-unknown -Oz -ffreestanding ${CFLAGS_LIBPNG_EFFECTIVE} \
+    -emit-llvm -c "$ZLIB_SRC_DIR/$src" -o "$bc"
+  LIB_BCS+=("$bc")
+done
+for src in "${LIBPNG_CORE_SRCS[@]}"; do
+  bc="$OUT_DIR/libpng_${src%.c}.bc"
+  clang-18 --target=wasm32-unknown-unknown -Oz -ffreestanding ${CFLAGS_LIBPNG_EFFECTIVE} \
+    -emit-llvm -c "$LIBPNG_SRC_DIR/$src" -o "$bc"
+  LIB_BCS+=("$bc")
+done
+
 echo "=== [02] LLVM passes: insert-nop + MarkMem1FFI ==="
 opt-18 -load-pass-plugin="$PASS_NOP_NORMAL_SO" -passes='function(insert-nop-grow)' "$C_FFI_BC" -o "$C_FFI_NOP_BC"
 opt-18 -load-pass-plugin="$PASS_NOP_NORMAL_SO" -passes='function(insert-nop-grow)' "$LIBC_SHIM_BC" -o "$LIBC_SHIM_NOP_BC"
 
 MEM1FFI_LIST_OUT="$MEM1_FFI_LIST_TSV" \
   opt-18 -load-pass-plugin="$PASS_MARK_SO" -passes=mark-mem1-ffi "$C_FFI_NOP_BC" -o "$C_FFI_MARKED_BC"
+
+# Fix known ptr-size metadata mismatch for scalar out-params.
+# Without this correction, rewrite-wasm-ffi may copy huge ranges for size_t* outputs.
+if command -v llvm-dis-18 >/dev/null 2>&1 && command -v llvm-as-18 >/dev/null 2>&1; then
+  C_FFI_MARKED_LL="$OUT_DIR/mem1_c_ffi_marked.ll"
+  llvm-dis-18 "$C_FFI_MARKED_BC" -o "$C_FFI_MARKED_LL"
+  sed -i \
+    -e 's/mem1-arg5"="ptrlike=1;dir=inout;len_arg=4"/mem1-arg5"="ptrlike=1;dir=inout;size=4"/g' \
+    -e 's/mem1-arg4"="ptrlike=1;dir=inout;len_arg=3"/mem1-arg4"="ptrlike=1;dir=inout;size=4"/g' \
+    -e 's/mem1-arg5"="ptrlike=1;dir=inout;len_arg=3"/mem1-arg5"="ptrlike=1;dir=inout;size=4"/g' \
+    "$C_FFI_MARKED_LL"
+  llvm-as-18 "$C_FFI_MARKED_LL" -o "$C_FFI_MARKED_BC"
+  rm -f "$C_FFI_MARKED_LL"
+fi
+
+if [[ -f "$MEM1_FFI_LIST_TSV" ]]; then
+  sed -i \
+    -e 's/mem1-arg5=ptrlike=1;dir=inout;len_arg=4/mem1-arg5=ptrlike=1;dir=inout;size=4/g' \
+    -e 's/mem1-arg4=ptrlike=1;dir=inout;len_arg=3/mem1-arg4=ptrlike=1;dir=inout;size=4/g' \
+    -e 's/mem1-arg5=ptrlike=1;dir=inout;len_arg=3/mem1-arg5=ptrlike=1;dir=inout;size=4/g' \
+    "$MEM1_FFI_LIST_TSV"
+fi
 
 echo "=== [03] Rust caller -> LLVM bc ==="
 MEM1_RO_LIST_OUT="$MEM1_RO_LIST_TSV" \
@@ -126,7 +171,7 @@ MEM1_RO_LIST="$MEM1_RO_LIST_TSV" \
     "$RUST_FFI_BC" -o "$RUST_FFI_RO_BC"
 
 echo "=== [04] Link + rewrite ==="
-llvm-link-18 "$RUST_FFI_RO_BC" "$C_FFI_MARKED_BC" "$LIBC_SHIM_NOP_BC" -o "$COMBINED_BC"
+llvm-link-18 "$RUST_FFI_RO_BC" "$C_FFI_MARKED_BC" "$LIBC_SHIM_NOP_BC" "${LIB_BCS[@]}" -o "$COMBINED_BC"
 
 opt-18 -load-pass-plugin="$RUST_ALLOC_SO" -load-pass-plugin="$REWRITE_SO" \
   -passes=rewrite-wasm-ffi "$COMBINED_BC" -o "$COMBINED_REWRITTEN_BC"
@@ -135,7 +180,7 @@ echo "=== [05] Codegen + link ==="
 llc-18 -filetype=obj -march=wasm32 "$COMBINED_REWRITTEN_BC" -o "$COMBINED_O"
 
 wasm-ld --no-entry --export-all --no-gc-sections \
-  "$COMBINED_O" "$RUNTIME_A" "$LIBPNG_LIB" "$ZLIB_LIB" -o "$COMBINED_RAW_WASM"
+  "$COMBINED_O" "$RUNTIME_A" -o "$COMBINED_RAW_WASM"
 
 command -v wasm2wat >/dev/null 2>&1 && wasm2wat --enable-multi-memory "$COMBINED_RAW_WASM" -o "$COMBINED_RAW_WAT"
 

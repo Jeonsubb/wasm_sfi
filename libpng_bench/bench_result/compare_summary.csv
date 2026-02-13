@@ -1,0 +1,7 @@
+op,variant,total_runs,success_runs,error_runs,success_rate_pct,mean_us_success,p50_us_success,mean_compression_ratio_success,sample_error
+encode,mem0,60,60,0,100.00,10874.739,2079.039,0.062210,
+decode,mem0,60,60,0,100.00,2540.743,619.053,0.062210,
+encode,sfi,60,0,60,0.00,,,,error while executing at wasm backtrace:     0:  0x2977e - <unknown>!<wasm function 621>     1:   0xd8a1 - <unknown>!<wa
+decode,sfi,60,0,60,0.00,,,,encode: error while executing at wasm backtrace:     0:  0x2977e - <unknown>!<wasm function 621>     1:   0xd8a1 - <unkn
+encode,mem1,60,0,60,0.00,,,,-203
+decode,mem1,60,0,60,0.00,,,,encode: -203

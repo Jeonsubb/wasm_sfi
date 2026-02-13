@@ -2,10 +2,13 @@
 #![no_main]
 
 use core::panic::PanicInfo;
+use core::mem::MaybeUninit;
 
 const BENCH_MAX_RAW: usize = 1 << 21; // 2 MiB
 const BENCH_MAX_ENCODED: usize = BENCH_MAX_RAW + (BENCH_MAX_RAW / 8) + 8192;
 const FIXED_WIDTH: usize = 256;
+const PNG_IMAGE_VERSION: u32 = 1;
+const PNG_FORMAT_RGBA: u32 = 0x0002 | 0x0001; // PNG_FORMAT_RGB | PNG_FORMAT_FLAG_ALPHA
 
 static mut BENCH_RAW: [u8; BENCH_MAX_RAW] = [0; BENCH_MAX_RAW];
 static mut BENCH_ENCODED: [u8; BENCH_MAX_ENCODED] = [0; BENCH_MAX_ENCODED];
@@ -17,31 +20,45 @@ static mut BENCH_WIDTH: usize = 0;
 static mut BENCH_HEIGHT: usize = 0;
 static mut BENCH_ENCODED_LEN: usize = 0;
 static mut LIBPNG_VERSION: i32 = 0;
+static mut ZLIB_COMPRESS_BOUND: u32 = 0;
 static mut BENCH_DECODED_WIDTH: usize = 0;
 static mut BENCH_DECODED_HEIGHT: usize = 0;
 
+#[repr(C)]
+struct PngImage {
+    opaque: *mut u8,
+    version: u32,
+    width: u32,
+    height: u32,
+    format: u32,
+    flags: u32,
+    colormap_entries: u32,
+    warning_or_error: u32,
+    message: [u8; 64],
+}
+
 extern "C" {
     fn bench_fill_target_from_pool(dst_mem0: *mut u8, size: usize) -> i32;
-    fn c_libpng_version_number() -> i32;
-
-    fn c_png_encode_rgba(
-        rgba: *const u8,
-        width: usize,
-        height: usize,
-        png_out: *mut u8,
-        png_cap: usize,
-        png_len: *mut usize,
+    fn png_access_version_number() -> u32;
+    fn png_image_begin_read_from_memory(image: *mut PngImage, memory: *const u8, size: usize) -> i32;
+    fn png_image_finish_read(
+        image: *mut PngImage,
+        background: *const u8,
+        buffer: *mut u8,
+        row_stride: i32,
+        colormap: *mut u8,
     ) -> i32;
-
-    fn c_png_decode_rgba(
-        png_data: *const u8,
-        png_len: usize,
-        rgba_out: *mut u8,
-        rgba_cap: usize,
-        out_width: *mut usize,
-        out_height: *mut usize,
+    fn png_image_write_to_memory(
+        image: *mut PngImage,
+        memory: *mut u8,
+        memory_bytes: *mut usize,
+        convert_to_8_bit: i32,
+        buffer: *const u8,
+        row_stride: i32,
+        colormap: *const u8,
     ) -> i32;
-
+    fn png_image_free(image: *mut PngImage);
+    fn compressBound(source_len: u32) -> u32;
     fn memcmp(a: *const u8, b: *const u8, n: usize) -> i32;
 }
 
@@ -85,7 +102,8 @@ pub extern "C" fn bench_prepare(size: u32) -> i32 {
     }
 
     unsafe {
-        LIBPNG_VERSION = c_libpng_version_number();
+        LIBPNG_VERSION = png_access_version_number() as i32;
+        ZLIB_COMPRESS_BOUND = compressBound(total as u32);
         BENCH_RAW_SIZE = total;
         BENCH_WIDTH = width;
         BENCH_HEIGHT = height;
@@ -107,23 +125,49 @@ pub extern "C" fn bench_png_encode(size: u32) -> i32 {
         return -111;
     }
 
-    let mut encoded_len: usize = 0;
-    let ret = unsafe {
-        c_png_encode_rgba(
+    let mut image = MaybeUninit::<PngImage>::zeroed();
+    let image = unsafe { image.assume_init_mut() };
+    image.version = PNG_IMAGE_VERSION;
+    image.width = unsafe { BENCH_WIDTH as u32 };
+    image.height = unsafe { BENCH_HEIGHT as u32 };
+    image.format = PNG_FORMAT_RGBA;
+
+    let mut needed = 0usize;
+    let ok_probe = unsafe {
+        png_image_write_to_memory(
+            image as *mut PngImage,
+            core::ptr::null_mut(),
+            &mut needed as *mut usize,
+            0,
             BENCH_RAW.as_ptr(),
-            BENCH_WIDTH,
-            BENCH_HEIGHT,
-            BENCH_ENCODED.as_mut_ptr(),
-            BENCH_MAX_ENCODED,
-            &mut encoded_len as *mut usize,
+            0,
+            core::ptr::null(),
         )
     };
-    if ret != 0 {
-        return ret;
+    if ok_probe == 0 {
+        return -203;
+    }
+    if needed > BENCH_MAX_ENCODED {
+        return -204;
+    }
+
+    let ok_write = unsafe {
+        png_image_write_to_memory(
+            image as *mut PngImage,
+            BENCH_ENCODED.as_mut_ptr(),
+            &mut needed as *mut usize,
+            0,
+            BENCH_RAW.as_ptr(),
+            0,
+            core::ptr::null(),
+        )
+    };
+    if ok_write == 0 {
+        return -205;
     }
 
     unsafe {
-        BENCH_ENCODED_LEN = encoded_len;
+        BENCH_ENCODED_LEN = needed;
     }
 
     0
@@ -145,21 +189,47 @@ pub extern "C" fn bench_png_decode(size: u32) -> i32 {
         return -122;
     }
 
-    let mut w: usize = 0;
-    let mut h: usize = 0;
-    let ret = unsafe {
-        c_png_decode_rgba(
+    let mut image = MaybeUninit::<PngImage>::zeroed();
+    let image = unsafe { image.assume_init_mut() };
+    image.version = PNG_IMAGE_VERSION;
+
+    let ok_begin = unsafe {
+        png_image_begin_read_from_memory(
+            image as *mut PngImage,
             BENCH_ENCODED.as_ptr(),
             encoded_len,
-            BENCH_DECODED.as_mut_ptr(),
-            BENCH_MAX_RAW,
-            &mut w as *mut usize,
-            &mut h as *mut usize,
         )
     };
-    if ret != 0 {
-        return ret;
+    if ok_begin == 0 {
+        return -212;
     }
+
+    image.format = PNG_FORMAT_RGBA;
+    let need = (image.width as usize)
+        .saturating_mul(image.height as usize)
+        .saturating_mul(4);
+    if need > BENCH_MAX_RAW {
+        unsafe { png_image_free(image as *mut PngImage) };
+        return -213;
+    }
+
+    let ok_finish = unsafe {
+        png_image_finish_read(
+            image as *mut PngImage,
+            core::ptr::null(),
+            BENCH_DECODED.as_mut_ptr(),
+            0,
+            core::ptr::null_mut(),
+        )
+    };
+    if ok_finish == 0 {
+        unsafe { png_image_free(image as *mut PngImage) };
+        return -214;
+    }
+
+    let w = image.width as usize;
+    let h = image.height as usize;
+    unsafe { png_image_free(image as *mut PngImage) };
 
     let expected_w = unsafe { BENCH_WIDTH };
     let expected_h = unsafe { BENCH_HEIGHT };
@@ -207,22 +277,49 @@ pub extern "C" fn bench_png_decode_external() -> i32 {
     if encoded_len == 0 {
         return -171;
     }
-    let mut w: usize = 0;
-    let mut h: usize = 0;
-    let ret = unsafe {
-        c_png_decode_rgba(
+    let mut image = MaybeUninit::<PngImage>::zeroed();
+    let image = unsafe { image.assume_init_mut() };
+    image.version = PNG_IMAGE_VERSION;
+
+    let ok_begin = unsafe {
+        png_image_begin_read_from_memory(
+            image as *mut PngImage,
             BENCH_ENCODED.as_ptr(),
             encoded_len,
-            BENCH_DECODED.as_mut_ptr(),
-            BENCH_MAX_RAW,
-            &mut w as *mut usize,
-            &mut h as *mut usize,
         )
     };
-    if ret != 0 {
-        return ret;
+    if ok_begin == 0 {
+        return -212;
     }
-    let raw = w.saturating_mul(h).saturating_mul(4);
+
+    image.format = PNG_FORMAT_RGBA;
+    let need = (image.width as usize)
+        .saturating_mul(image.height as usize)
+        .saturating_mul(4);
+    if need > BENCH_MAX_RAW {
+        unsafe { png_image_free(image as *mut PngImage) };
+        return -213;
+    }
+
+    let ok_finish = unsafe {
+        png_image_finish_read(
+            image as *mut PngImage,
+            core::ptr::null(),
+            BENCH_DECODED.as_mut_ptr(),
+            0,
+            core::ptr::null_mut(),
+        )
+    };
+    if ok_finish == 0 {
+        unsafe { png_image_free(image as *mut PngImage) };
+        return -214;
+    }
+
+    let w = image.width as usize;
+    let h = image.height as usize;
+    unsafe { png_image_free(image as *mut PngImage) };
+
+    let raw = need;
     if raw > BENCH_MAX_RAW {
         return -172;
     }
@@ -252,6 +349,11 @@ pub extern "C" fn bench_get_decoded_height() -> usize {
 #[no_mangle]
 pub extern "C" fn bench_get_libpng_version() -> i32 {
     unsafe { LIBPNG_VERSION }
+}
+
+#[no_mangle]
+pub extern "C" fn bench_get_zlib_compress_bound() -> u32 {
+    unsafe { ZLIB_COMPRESS_BOUND }
 }
 
 #[no_mangle]
