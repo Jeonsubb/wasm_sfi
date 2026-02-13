@@ -1,0 +1,2 @@
+caller=bench_snappy_compress_impl	callee=snappy_compress_with_len	call_index=0	arg_index=2	kind=ptr
+caller=bench_snappy_uncompress_impl	callee=snappy_uncompress_with_len	call_index=0	arg_index=0	kind=ptr

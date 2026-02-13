@@ -1,0 +1,286 @@
+[0] build passes/runtime
+[0a] pass build skipped (already built)
+[0b] build SFI runtime
+[0b] runtime build skipped (sfi_runtime.a exists)
+[1] C code -> LLVM bc
+[1a] mark-mem1-ffi pass
+[MarkMem1FFI] Marked FFI function: bench_fill_target_from_pool (arg0: ptrlike, inout, len_arg=1)
+[MarkMem1FFI] Marked FFI function: snappy_uncompressed_length (arg0: ptrlike, inout, len_arg=1)
+[MarkMem1FFI] Marked FFI function: snappy_uncompressed_length (arg2: ptrlike, inout, len_arg=1)
+[MarkMem1FFI] Marked FFI function: snappy_uncompressed_length_with_len (arg0: ptrlike, inout, len_arg=1)
+[MarkMem1FFI] Marked FFI function: snappy_uncompressed_length_with_len (arg2: ptrlike, inout, len_arg=3)
+[MarkMem1FFI] Marked FFI function: snappy_compress_with_len (arg0: ptrlike, inout, len_arg=1)
+[MarkMem1FFI] Marked FFI function: snappy_compress_with_len (arg2: ptrlike, inout, len_arg=3)
+[MarkMem1FFI] Marked FFI function: snappy_compress_with_len (arg4: ptrlike, inout, len_arg=5)
+[MarkMem1FFI] Marked FFI function: snappy_compress_with_len (arg6: ptrlike, inout, len_arg=7)
+[MarkMem1FFI] Marked FFI function: snappy_uncompress_with_len (arg0: ptrlike, inout, len_arg=1)
+[MarkMem1FFI] Marked FFI function: snappy_uncompress_with_len (arg2: ptrlike, inout, len_arg=3)
+[MarkMem1FFI] Marked FFI function: snappy_init_env_with_len (arg0: ptrlike, inout, len_arg=1)
+[MarkMem1FFI] Marked FFI function: snappy_free_env (arg0: ptrlike, inout)
+[MarkMem1FFI] Dumped mem1-ffi list to /home/song/2026/wasm_sfi/snappy_bench/build/sfi/mem1_ffi_list.tsv
+[2] Rust code -> LLVM bc
+[2a] inject-mem1-markers pass
+[InjectMem1Markers] Loaded 2 entries from /home/song/2026/wasm_sfi/snappy_bench/build/sfi/mem1_ro_list.tsv
+[3] link + rewrite-wasm-ffi + sfi-bounds-check
+[RewriteWasmFFI] Found call to: bench_fill_target_from_pool
+[RewriteWasmFFI] bench_fill_target_from_pool has mem1-ffi attribute.
+[RewriteWasmFFI] Processing pending copy-out and free operations. Post count: 1
+[RewriteWasmFFI] Found call to: snappy_init_env_with_len
+[RewriteWasmFFI] snappy_init_env_with_len has mem1-ffi attribute.
+[RewriteWasmFFI] Found call to: snappy_max_compressed_length
+[RewriteWasmFFI] snappy_max_compressed_length does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: snappy_compress_with_len
+[RewriteWasmFFI] snappy_compress_with_len has mem1-ffi attribute.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Processing pending copy-out and free operations. Post count: 1
+[RewriteWasmFFI] Processing pending copy-out and free operations. Post count: 4
+[RewriteWasmFFI] Found call to: snappy_uncompress_with_len
+[RewriteWasmFFI] snappy_uncompress_with_len has mem1-ffi attribute.
+[RewriteWasmFFI] Processing pending copy-out and free operations. Post count: 2
+[RewriteWasmFFI] Found call to: snappy_max_compressed_length
+[RewriteWasmFFI] snappy_max_compressed_length does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memcmp
+[RewriteWasmFFI] memcmp does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.umin.i32
+[RewriteWasmFFI] llvm.umin.i32 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memcpy
+[RewriteWasmFFI] memcpy does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: snappy_compress
+[RewriteWasmFFI] snappy_compress does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: free
+[RewriteWasmFFI] free does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: clear_env
+[RewriteWasmFFI] clear_env does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: snappy_init_env
+[RewriteWasmFFI] snappy_init_env does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: snappy_uncompressed_length_internal
+[RewriteWasmFFI] snappy_uncompressed_length_internal does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: snappy_uncompress
+[RewriteWasmFFI] snappy_uncompress does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: snappy_uncompressed_length_internal
+[RewriteWasmFFI] snappy_uncompressed_length_internal does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: snappy_uncompressed_length_internal
+[RewriteWasmFFI] snappy_uncompressed_length_internal does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: refill_tag
+[RewriteWasmFFI] refill_tag does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: refill_tag
+[RewriteWasmFFI] refill_tag does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: unaligned_copy64
+[RewriteWasmFFI] unaligned_copy64 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: unaligned_copy64
+[RewriteWasmFFI] unaligned_copy64 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: refill_tag
+[RewriteWasmFFI] refill_tag does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memcpy
+[RewriteWasmFFI] memcpy does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: writer_append
+[RewriteWasmFFI] writer_append does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: writer_append
+[RewriteWasmFFI] writer_append does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: refill_tag
+[RewriteWasmFFI] refill_tag does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memcpy
+[RewriteWasmFFI] memcpy does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: unaligned_copy64
+[RewriteWasmFFI] unaligned_copy64 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: unaligned_copy64
+[RewriteWasmFFI] unaligned_copy64 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: unaligned_copy64
+[RewriteWasmFFI] unaligned_copy64 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: unaligned_copy64
+[RewriteWasmFFI] unaligned_copy64 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: refill_tag
+[RewriteWasmFFI] refill_tag does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memmove
+[RewriteWasmFFI] memmove does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.umin.i32
+[RewriteWasmFFI] llvm.umin.i32 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memcpy
+[RewriteWasmFFI] memcpy does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memmove
+[RewriteWasmFFI] memmove does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memcpy
+[RewriteWasmFFI] memcpy does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memcpy
+[RewriteWasmFFI] memcpy does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memcpy
+[RewriteWasmFFI] memcpy does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memcpy
+[RewriteWasmFFI] memcpy does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memcpy
+[RewriteWasmFFI] memcpy does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: clear_env
+[RewriteWasmFFI] clear_env does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: malloc
+[RewriteWasmFFI] malloc does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memset
+[RewriteWasmFFI] memset does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: append
+[RewriteWasmFFI] append does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.smin.i32
+[RewriteWasmFFI] llvm.smin.i32 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memcpy
+[RewriteWasmFFI] memcpy does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memcpy
+[RewriteWasmFFI] memcpy does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.umin.i32
+[RewriteWasmFFI] llvm.umin.i32 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memset
+[RewriteWasmFFI] memset does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.ctlz.i32
+[RewriteWasmFFI] llvm.ctlz.i32 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: hash
+[RewriteWasmFFI] hash does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: hash
+[RewriteWasmFFI] hash does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memcpy
+[RewriteWasmFFI] memcpy does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memcpy
+[RewriteWasmFFI] memcpy does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: emit_literal
+[RewriteWasmFFI] emit_literal does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memcpy
+[RewriteWasmFFI] memcpy does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memcpy
+[RewriteWasmFFI] memcpy does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memcpy
+[RewriteWasmFFI] memcpy does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memcpy
+[RewriteWasmFFI] memcpy does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.cttz.i32
+[RewriteWasmFFI] llvm.cttz.i32 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: emit_copy_less_than64
+[RewriteWasmFFI] emit_copy_less_than64 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: emit_copy_less_than64
+[RewriteWasmFFI] emit_copy_less_than64 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: emit_copy_less_than64
+[RewriteWasmFFI] emit_copy_less_than64 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: get_u32_at_offset
+[RewriteWasmFFI] get_u32_at_offset does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: get_u32_at_offset
+[RewriteWasmFFI] get_u32_at_offset does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memcpy
+[RewriteWasmFFI] memcpy does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: get_u32_at_offset
+[RewriteWasmFFI] get_u32_at_offset does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: get_u32_at_offset
+[RewriteWasmFFI] get_u32_at_offset does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: emit_literal
+[RewriteWasmFFI] emit_literal does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: append
+[RewriteWasmFFI] append does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memcpy
+[RewriteWasmFFI] memcpy does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memcpy
+[RewriteWasmFFI] memcpy does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: unaligned_copy64
+[RewriteWasmFFI] unaligned_copy64 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: unaligned_copy64
+[RewriteWasmFFI] unaligned_copy64 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memcpy
+[RewriteWasmFFI] memcpy does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memcpy
+[RewriteWasmFFI] memcpy does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memcpy
+[RewriteWasmFFI] memcpy does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: malloc
+[RewriteWasmFFI] malloc does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memset
+[RewriteWasmFFI] memset does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: malloc
+[RewriteWasmFFI] malloc does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: malloc
+[RewriteWasmFFI] malloc does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memcpy
+[RewriteWasmFFI] memcpy does not have mem1-ffi attribute. Skipping.
+[SfiBoundsCheck] C_BASE=131072 C_END=16908288
+[SfiBoundsCheck] target functions: 25
+[4] codegen + wasm link
+[5] wasm post-process (C stack split + __sfi_check instrumentation)
+[6] debug/decompile
+[7] wasmtime smoke test
+[8] cleanup intermediates
+done: /home/song/2026/wasm_sfi/snappy_bench/build/sfi/final_sfi_snappy.wasm

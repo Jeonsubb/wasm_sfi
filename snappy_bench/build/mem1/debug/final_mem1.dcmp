@@ -1,0 +1,1800 @@
+export memory memory(initial: 213, max: 0);
+memory M_b(initial: 256, max: 65536);
+
+global g_a:int = 13939040;
+export global heap_base:int = 13939040;
+export global dso_handle:int = 1024;
+export global data_end:int = 13873492;
+export global global_base:int = 1024;
+export global heap_end:int = 13959168;
+export global memory_base:int = 0;
+export global table_base:int = 1;
+
+export table indirect_function_table:funcref(min: 1, max: 1);
+
+data d_0001112223334445556667778889(offset: 1024) =
+  "\00\00\00\00\ff\00\00\00\ff\ff\00\00\ff\ff\ff\00\ff\ff\ff\ff\00\00\00\00"
+  "\00\00\00\00\00\00\00\00\01\00\04\08\01\10\01 \02\00\05\08\02\10\02 \03"
+  "\00\06\08\03\10\03 \04\00\07\08\04\10\04 \05\00\08\08\05\10\05 \06\00\09"
+  "\08\06\10\06 \07\00\0a\08\07\10\07 \08\00\0b\08\08\10\08 \09\00\04\09\09"
+  "\10\09 \0a\00\05\09\0a\10\0a \0b\00\06\09\0b\10\0b \0c\00\07\09\0c\10\0c"
+  " \0d\00\08\09\0d\10\0d \0e\00\09\09\0e\10\0e \0f\00\0a\09\0f\10\0f \10"
+  "\00\0b\09\10\10\10 \11\00\04\0a\11\10\11 \12\00\05\0a\12\10\12 \13\00\06"
+  "\0a\13\10\13 \14\00\07\0a\14\10\14 \15\00\08\0a\15\10\15 \16\00\09\0a\16"
+  "\10\16 \17\00\0a\0a\17\10\17 \18\00\0b\0a\18\10\18 \19\00\04\0b\19\10\19"
+  " \1a\00\05\0b\1a\10\1a \1b\00\06\0b\1b\10\1b \1c\00\07\0b\1c\10\1c \1d"
+  "\00\08\0b\1d\10\1d \1e\00\09\0b\1e\10\1e \1f\00\0a\0b\1f\10\1f  \00\0b"
+  "\0b \10  !\00\04\0c!\10! \22\00\05\0c\22\10\22 #\00\06\0c#\10# $\00\07"
+  "\0c$\10$ %\00\08\0c%\10% &\00\09\0c&\10& '\00\0a\0c'\10' (\00\0b\0c(\10"
+  "( )\00\04\0d)\10) *\00\05\0d*\10* +\00\06\0d+\10+ ,\00\07\0d,\10, -\00"
+  "\08\0d-\10- .\00\09\0d.\10. /\00\0a\0d/\10/ 0\00\0b\0d0\100 1\00\04\0e"
+  "1\101 2\00\05\0e2\102 3\00\06\0e3\103 4\00\07\0e4\104 5\00\08\0e5\105 "
+  "6\00\09\0e6\106 7\00\0a\0e7\107 8\00\0b\0e8\108 9\00\04\0f9\109 :\00\05"
+  "\0f:\10: ;\00\06\0f;\10; <\00\07\0f<\10< \01\08\08\0f=\10= \01\10\09\0f"
+  ">\10> \01\18\0a\0f?\10? \01 \0b\0f@\10@ ";
+
+export function wasm_call_ctors() { // func0
+}
+
+export function bench_prepare(a:int):int { // func1
+  if (a) goto B_a;
+  return -120;
+  label B_a:
+  var b:int = -121;
+  if (a >= 4194305) goto B_b;
+  var c:int = mem1_alloc(a);
+  memcpy_0_to_1(c, 1568, a);
+  b = bench_fill_target_from_pool(c, a);
+  memcpy_1_to_0(1568, c, a);
+  mem1_free(c);
+  if (b) goto B_b;
+  b = 0;
+  0[3320894]:int = a;
+  0[13283572]:byte = 1;
+  0[3320891]:int = 0;
+  0[3320892]:int = 0;
+  label B_b:
+  return b;
+}
+
+export function bench_fill_target_from_pool(a:int, b:int):int { // func2
+  var c:int;
+  var g:int;
+  var e:int;
+  if (b) goto B_b;
+  c = -120;
+  goto B_a;
+  label B_b:
+  c = -121;
+  if (b > 4194304) goto B_a;
+  c = 0;
+  var d:int = 0[13873464]:ubyte;
+  nop;
+  if (d) goto B_c;
+  e = 13283616;
+  var f:int = 17;
+  loop L_d {
+    if (c != 9) goto B_e;
+    0[13873464]:byte = 1;
+    nop;
+    goto B_c;
+    label B_e:
+    d = 0;
+    g = f;
+    loop L_g {
+      if (d == 65536) goto B_f;
+      (e + d)[0]:byte = g;
+      g = g + 31;
+      d = d + 1;
+      nop;
+      continue L_g;
+    }
+    unreachable;
+    label B_f:
+    f = f + 17;
+    e = e + 65536;
+    c = c + 1;
+    continue L_d;
+  }
+  unreachable;
+  label B_c:
+  c = 0;
+  g = 0;
+  d = 0;
+  loop L_h {
+    if (b <= d) goto B_a;
+    memcpy(a + d,
+           (g << 16) + 13283616,
+           e = select_if(e = b - d, 65536, e < 65536));
+    g = select_if(0, g = g + 1, g == 9);
+    d = e + d;
+    continue L_h;
+  }
+  unreachable;
+  label B_a:
+  return c;
+}
+
+export function bench_snappy_compress(a:int):int { // func3
+  var d:int;
+  var c:int;
+  var e:int;
+  var b:int_ptr = g_a - 16;
+  g_a = b;
+  if (a) goto B_b;
+  c = -90;
+  goto B_a;
+  label B_b:
+  c = -91;
+  if (a > 4194304) goto B_a;
+  c = -92;
+  if (eqz(0[13283572]:ubyte)) goto B_a;
+  if (0[3320894]:int != a) goto B_a;
+  if (0[13283592]:ubyte) goto B_c;
+  d = mem1_alloc(12);
+  memcpy_0_to_1(d, 13283580, 12);
+  e = snappy_init_env_with_len(d, 12);
+  memcpy_1_to_0(13283580, d, 12);
+  mem1_free(d);
+  if (e) goto B_a;
+  0[13283592]:byte = 1;
+  label B_c:
+  c = -93;
+  d = snappy_max_compressed_length(a);
+  if (d > 4893386) goto B_a;
+  0[3320892]:int = 0;
+  0[3320891]:int = 0;
+  b[3] = d;
+  c = mem1_alloc(12);
+  memcpy_0_to_1(c, 13283580, 12);
+  e = mem1_alloc(a);
+  memcpy_0_to_1(e, 1568, a);
+  var f:int = mem1_alloc(d);
+  memcpy_0_to_1(f, 4195872, d);
+  var g:int = mem1_alloc(4);
+  memcpy_0_to_1(g, b + 12, 4);
+  var h:int = snappy_compress_with_len(c, 12, e, a, f, d, g, 4);
+  memcpy_1_to_0(13283580, c, 12);
+  mem1_free(c);
+  memcpy_1_to_0(1568, e, a);
+  mem1_free(e);
+  memcpy_1_to_0(4195872, f, d);
+  mem1_free(f);
+  memcpy_1_to_0(b + 12, g, 4);
+  mem1_free(g);
+  c = -94;
+  if (h) goto B_a;
+  0[3320891]:int = b[3];
+  0[3320892]:int = a;
+  c = 0;
+  label B_a:
+  g_a = b + 16;
+  return c;
+}
+
+export function snappy_init_env_with_len(a:int, b:int):int { // func4
+  var c:int = -5;
+  if (b < 12) goto B_a;
+  c = snappy_init_env(a);
+  label B_a:
+  return c;
+}
+
+export function snappy_max_compressed_length(a:int):int { // func5
+  return a + a / 6 + 32
+}
+
+export function snappy_compress_with_len(a:int, b:int, c:int, d:int, e:int, f:int, g:int, h:int):int { // func6
+  var i:int = -5;
+  if (b < 12) goto B_a;
+  if (h < 4) goto B_a;
+  if (d + d / 6 + 32 > f) goto B_a;
+  i = snappy_compress(a, c, d, e, g);
+  label B_a:
+  return i;
+}
+
+export function bench_snappy_uncompress(a:int):int { // func7
+  if (a) goto B_a;
+  return -100;
+  label B_a:
+  var b:int = -101;
+  if (a > 4194304) goto B_b;
+  b = -102;
+  var c:int = 0[3320891]:int;
+  if (eqz(c)) goto B_b;
+  if (0[3320892]:int != a) goto B_b;
+  0[3320900]:int = c;
+  0[13283596]:byte = 1;
+  0[13283604]:byte = 1;
+  0[3320902]:int = a;
+  0[3320903]:int = 0;
+  var d:int = mem1_alloc(c);
+  memcpy_0_to_1(d, 4195872, c);
+  var e:int = mem1_alloc(a);
+  memcpy_0_to_1(e, 9089258, a);
+  b = snappy_uncompress_with_len(d, c, e, a);
+  memcpy_1_to_0(4195872, d, c);
+  mem1_free(d);
+  memcpy_1_to_0(9089258, e, a);
+  mem1_free(e);
+  0[3320903]:int = b;
+  label B_b:
+  return b;
+}
+
+export function snappy_uncompress_with_len(a:int, b:int, c:int, d:int):int { // func8
+  var e:int_ptr = g_a - 16;
+  g_a = e;
+  0[3468360]:int = a;
+  nop;
+  0[3468361]:int = b;
+  nop;
+  0[3468362]:int = c;
+  nop;
+  0[3468363]:int = d;
+  nop;
+  0[3468364]:int = 0;
+  nop;
+  e[3] = 0;
+  nop;
+  var f:int = -201;
+  var g:int = -201;
+  if (eqz(f_ia(a, b, e + 12))) goto B_a;
+  var h:int = e[3];
+  nop;
+  0[3468364]:int = h;
+  nop;
+  f = -202;
+  g = -202;
+  if (h > d) goto B_a;
+  0[3468365]:int = 3;
+  nop;
+  g = select_if(-203, 0, a = snappy_uncompress(a, b, c));
+  f = select_if(-203, 100, a);
+  label B_a:
+  0[3468365]:int = f;
+  nop;
+  g_a = e + 16;
+  return g;
+}
+
+export function bench_verify_compress(a:int):int { // func9
+  if (a) goto B_a;
+  return -140;
+  label B_a:
+  var b:int = -141;
+  if (a >= 4194305) goto B_b;
+  b = -142;
+  var c:int = 0[3320891]:int;
+  if (eqz(c)) goto B_b;
+  if (0[3320892]:int != a) goto B_b;
+  b = select_if(-143, 0, c > snappy_max_compressed_length(a));
+  label B_b:
+  return b;
+}
+
+export function bench_get_compressed_len():int { // func10
+  return 0[3320891]:int
+}
+
+export function bench_verify_uncompress(a:int):int { // func11
+  if (a) goto B_a;
+  return -150;
+  label B_a:
+  var b:int = -151;
+  if (a >= 4194305) goto B_b;
+  b = -152;
+  if (eqz(0[3320891]:int)) goto B_b;
+  if (0[3320892]:int != a) goto B_b;
+  b = select_if(-155, 0, memcmp(9089258, 1568, a));
+  label B_b:
+  return b;
+}
+
+export function memcmp(a:ubyte_ptr, b:ubyte_ptr, c:int):int { // func12
+  var d:int;
+  var e:int;
+  loop L_a {
+    if (c) goto B_b;
+    return 0;
+    label B_b:
+    c = c + -1;
+    d = a[0];
+    nop;
+    e = b[0];
+    nop;
+    b = b + 1;
+    a = a + 1;
+    if (d == e) continue L_a;
+  }
+  return d - e;
+}
+
+export function bench_debug_uncomp_compressed_ptr():int { // func13
+  return select_if(4195872, 0, 0[13283596]:ubyte)
+}
+
+export function bench_debug_uncomp_compressed_len():int { // func14
+  return 0[3320900]:int
+}
+
+export function bench_debug_uncomp_dst_ptr():int { // func15
+  return select_if(9089258, 0, 0[13283604]:ubyte)
+}
+
+export function bench_debug_uncomp_dst_len():int { // func16
+  return 0[3320902]:int
+}
+
+export function bench_debug_uncomp_last_ret():int { // func17
+  return 0[3320903]:int
+}
+
+export function bench_debug_first_mismatch(a:int):int { // func18
+  var b:int = -1;
+  if (a + -1 > 4194303) goto B_a;
+  var c:int = 0;
+  loop L_b {
+    if ((c + 9089258)[0]:ubyte == (c + 1568)[0]:ubyte) goto B_c;
+    b = c;
+    goto B_a;
+    label B_c:
+    if (a != (c = c + 1)) continue L_b;
+  }
+  label B_a:
+  return b;
+}
+
+export function bench_debug_target_byte_at(a:int):int { // func19
+  var b:int = -1;
+  if (a > 4194303) goto B_a;
+  b = (a + 1568)[0]:ubyte;
+  label B_a:
+  return b;
+}
+
+export function bench_debug_uncompressed_byte_at(a:int):int { // func20
+  var b:int = -1;
+  if (a > 4194303) goto B_a;
+  b = (a + 9089258)[0]:ubyte;
+  label B_a:
+  return b;
+}
+
+export function rust_begin_unwind(a:int) { // func21
+  loop L_a {
+    continue L_a
+  }
+  unreachable;
+}
+
+export function memcpy(a:int, b:int, c:int):int { // func22
+  var d:int = 0;
+  return loop L_a {
+           if (c != d) goto B_b;
+           return a;
+           label B_b:
+           var e:int = (b + d)[0]:ubyte;
+           nop;
+           (a + d)[0]:byte = e;
+           d = d + 1;
+           nop;
+           continue L_a;
+         }
+}
+
+export function snappy_compress(a:{ a:int, b:int, c:int }, b:int, c:int, d:int, e:int_ptr):int { // func23
+  var g:int;
+  var j:int;
+  var k:int;
+  var l:ubyte_ptr;
+  var s:int;
+  var x:int;
+  var p:int;
+  var v:int;
+  var w:int;
+  var f:int = g_a - 16;
+  g_a = f;
+  f[0]:int = d;
+  nop;
+  if (c > 127) goto B_b;
+  f[7]:byte = c;
+  nop;
+  g = f + 8;
+  goto B_a;
+  label B_b:
+  if (c > 16383) goto B_c;
+  f[7]:byte = c | 128;
+  nop;
+  f[8]:byte = c >> 7;
+  nop;
+  g = f + 9;
+  goto B_a;
+  label B_c:
+  if (c > 2097151) goto B_d;
+  f[7]:byte = c | 128;
+  nop;
+  f[8]:byte = c >> 7 | 128;
+  nop;
+  f[9]:byte = c >> 14;
+  nop;
+  g = f + 10;
+  goto B_a;
+  label B_d:
+  f[7]:byte = c | 128;
+  nop;
+  f[8]:byte = c >> 7 | 128;
+  nop;
+  f[9]:byte = c >> 14 | 128;
+  g = c >> 21;
+  nop;
+  if (c > 268435455) goto B_e;
+  f[10]:byte = g;
+  nop;
+  g = f + 11;
+  goto B_a;
+  label B_e:
+  f[10]:byte = g | 128;
+  nop;
+  f[11]:byte = c >> 28;
+  nop;
+  g = f + 12;
+  label B_a:
+  f_ta(f, f + 7, g - f + 7);
+  var h:int = 0;
+  var i:int = c;
+  return 
+    loop L_f {
+      if (i < 1) goto B_h;
+      if (c) goto B_g;
+      h = -5;
+      label B_h:
+      g = f[0]:int;
+      nop;
+      e[0] = g - d;
+      nop;
+      g_a = f + 16;
+      return h;
+      label B_g:
+      if (c >= (j = select_if(i, 65536, i < 65536))) goto B_i;
+      g = a.b;
+      nop;
+      memcpy(g, b, c);
+      g = c;
+      loop L_j {
+        b = b + g;
+        k = a.b;
+        nop;
+        g = 0;
+        memcpy(k + c, b, 0);
+        continue L_j;
+      }
+      unreachable;
+      label B_i:
+      k = select_if(j, 16384, j < 16384);
+      g = 256;
+      loop L_k {
+        l = g;
+        g = l << 1;
+        if (l < k) continue L_k;
+      }
+      k = a.a;
+      nop;
+      var m:int = memset(k, 0, g);
+      var n:int = f[0]:int;
+      nop;
+      if (n) goto B_l;
+      n = a.c;
+      nop;
+      label B_l:
+      var o:int = b + j;
+      if (i >= 15) goto B_n;
+      p = n;
+      goto B_m;
+      label B_n:
+      var q:int = o + -4;
+      var r:int = o + -15;
+      k = b + 1;
+      var t:int = f_ua(k, s = 32 - (clz(l) ^ 31));
+      var u:int = b;
+      p = n;
+      loop L_o {
+        l = 32;
+        loop L_p {
+          g = k;
+          k = g + (l >> 5);
+          if (k <= r) goto B_q;
+          b = u;
+          goto B_m;
+          label B_q:
+          v = t << 1;
+          t = f_ua(k, s);
+          v = m + v;
+          w = v[0]:ushort;
+          nop;
+          v[0]:short = g - b;
+          nop;
+          v = memcpy(f + 12, g, 4)[0]:int;
+          nop;
+          w = memcpy(f + 12, x = b + w, 4)[0]:int;
+          l = l + 1;
+          nop;
+          if (v != w) continue L_p;
+        }
+        p = f_va(p, u, g - u, 1);
+        loop L_r {
+          v = g + 4;
+          w = x + 4;
+          k = 0;
+          loop L_v {
+            l = v + k;
+            if (l > q) goto B_u;
+            l = memcpy(f + 12, l, 4)[0]:int;
+            nop;
+            t = memcpy(f + 12, u = w + k, 4)[0]:int;
+            nop;
+            if (l != t) goto B_t;
+            k = k + 4;
+            continue L_v;
+          }
+          unreachable;
+          label B_u:
+          loop L_w {
+            l = v + k;
+            if (l >= o) goto B_s;
+            t = (w + k)[0]:ubyte;
+            nop;
+            l = l[0];
+            nop;
+            if (t != l) goto B_s;
+            k = k + 1;
+            continue L_w;
+          }
+          unreachable;
+          label B_t:
+          l = memcpy(f + 12, g + k + 4, 4)[0]:int;
+          nop;
+          k = (ctz(l ^ memcpy(f + 12, u, 4)[0]:int) >> 3) + k;
+          nop;
+          label B_s:
+          l = g - x;
+          t = k + 4;
+          k = t;
+          loop L_y {
+            if (k < 68) goto B_x;
+            k = k + -64;
+            p = f_wa(p, l, 64);
+            continue L_y;
+          }
+          unreachable;
+          label B_x:
+          g = g + t;
+          if (k < 65) goto B_z;
+          k = k + -60;
+          p = f_wa(p, l, 60);
+          label B_z:
+          p = f_wa(p, l, k);
+          if (g < r) goto B_aa;
+          b = g;
+          goto B_m;
+          label B_aa:
+          m[f_xa(l = g + -1, 0) * 506832829 >> s]:short = (k = g - b) + -1;
+          nop;
+          t = m + ((f_xa(l, 1) * 506832829 >> s) << 1);
+          v = t[0]:ushort;
+          nop;
+          v = memcpy(f + 12, x = b + v, 4)[0]:int;
+          nop;
+          t[0]:short = k;
+          nop;
+          if (v == f_xa(l, 1)) continue L_r;
+        }
+        k = g + 1;
+        t = f_xa(l, 2) * 506832829 >> s;
+        u = g;
+        continue L_o;
+      }
+      unreachable;
+      label B_m:
+      if (b >= o) goto B_ba;
+      p = f_va(p, b, o - b, 0);
+      label B_ba:
+      f_ta(f, n, p - n);
+      c = c - j;
+      i = i - j;
+      b = o;
+      continue L_f;
+    }
+}
+
+export function snappy_dbg_last_compressed_ptr():int { // func24
+  var a:int = 0[3468360]:int;
+  nop;
+  return a;
+}
+
+export function snappy_dbg_last_expected():int { // func25
+  var a:int = 0[3468364]:int;
+  nop;
+  return a;
+}
+
+export function snappy_dbg_last_n():int { // func26
+  var a:int = 0[3468361]:int;
+  nop;
+  return a;
+}
+
+export function snappy_dbg_last_stage():int { // func27
+  var a:int = 0[3468365]:int;
+  nop;
+  return a;
+}
+
+export function snappy_dbg_last_uncompressed_len():int { // func28
+  var a:int = 0[3468363]:int;
+  nop;
+  return a;
+}
+
+export function snappy_dbg_last_uncompressed_ptr():int { // func29
+  var a:int = 0[3468362]:int;
+  nop;
+  return a;
+}
+
+export function snappy_free_env(a:int_ptr) { // func30
+  var b:int = a[0];
+  nop;
+  free(b);
+  f_ga(a);
+}
+
+export function free(a:int) { // func31
+  mem1_free(a)
+}
+
+function f_ga(a:int) { // func32
+  memset(a, 0, 12)
+}
+
+export function snappy_init_env(a:int_ptr):int { // func33
+  var b:int;
+  f_ga(a);
+  a[0] = (b = malloc(32768));
+  nop;
+  return select_if(0, -12, b);
+}
+
+function f_ia(a:{ a:byte, b:byte, c:byte, d:byte, e:ubyte }, b:int, c:int_ptr):int { // func34
+  var d:int = 0;
+  if (b < 1) goto B_a;
+  var e:int = a.a;
+  var f:int = e & 127;
+  nop;
+  if (e > -1) goto B_b;
+  if (b == 1) goto B_a;
+  e = a.b;
+  f = (e << 7 & 16256) | f;
+  nop;
+  if (e > -1) goto B_b;
+  if (b < 3) goto B_a;
+  e = a.c;
+  f = (e << 14 & 2080768) | f;
+  nop;
+  if (e > -1) goto B_b;
+  if (b == 3) goto B_a;
+  e = a.d;
+  f = (e << 21 & 266338304) | f;
+  nop;
+  if (e > -1) goto B_b;
+  if (b < 5) goto B_a;
+  b = a.e;
+  nop;
+  if (b > 15) goto B_a;
+  f = b << 28 | f;
+  label B_b:
+  c[0] = f;
+  nop;
+  d = 1;
+  label B_a:
+  return d;
+}
+
+export function snappy_uncompress(a:byte_ptr, b:int, c:int):int { // func35
+  var i:int;
+  var d:int = g_a - 48;
+  g_a = d;
+  d[0]:int = c;
+  nop;
+  d[1]:int = c;
+  nop;
+  d[5]:int = d + 12;
+  nop;
+  d[6]:int = 0;
+  nop;
+  d[7]:int = 0;
+  nop;
+  d[8]:int = 0;
+  nop;
+  d[36]:byte = 0;
+  nop;
+  var e:int = d[4]:int;
+  nop;
+  var f:int = d[3]:int;
+  nop;
+  var g:int = 0;
+  var h:int = 0;
+  loop L_e {
+    if (h > 31) goto B_d;
+    if (eqz(b)) goto B_d;
+    i = a[0];
+    g = (i & 127) << h | g;
+    nop;
+    f = a + 1;
+    a = f;
+    e = b + -1;
+    b = e;
+    h = h + 7;
+    if (i < 0) continue L_e;
+  }
+  d[4]:int = e;
+  nop;
+  d[3]:int = f;
+  nop;
+  d[2]:int = c + g;
+  nop;
+  if (eqz(f_na(d + 20))) goto B_c;
+  h = d[6]:int;
+  nop;
+  loop L_f {
+    b = d[7]:int;
+    nop;
+    if (b - h > 4) goto B_g;
+    d[6]:int = h;
+    nop;
+    if (eqz(f_na(d + 20))) goto B_c;
+    h = d[6]:int;
+    nop;
+    label B_g:
+    i = h + 1;
+    a = h[0]:ubyte;
+    nop;
+    if (a & 3) goto B_i;
+    b = d[7]:int - i;
+    f = a >> 2;
+    g = f + 1;
+    nop;
+    nop;
+    nop;
+    if (a > 63) goto B_j;
+    if (b < 16) goto B_j;
+    if (d[2]:int - (e = d[1]:int) < 16) goto B_j;
+    f_oa(i, e);
+    f_oa(h + 9, e + 8);
+    d[1]:int = e + g;
+    nop;
+    b = d[7]:int;
+    nop;
+    if (b - (h = i + g) > 4) continue L_f;
+    d[6]:int = h;
+    nop;
+    if (eqz(f_na(d + 20))) goto B_c;
+    goto B_h;
+    label B_j:
+    if (a < 237) goto B_k;
+    h = memcpy(d + 44, i, 4);
+    b = f + -59;
+    g = (((b << 2) + 1024)[0]:int & h[0]:int) + 1;
+    nop;
+    nop;
+    b = d[7]:int - (i = i + b);
+    nop;
+    label B_k:
+    loop L_m {
+      if (g <= b) goto B_l;
+      if (eqz(f_pa(d, i, b))) goto B_c;
+      h = d[5]:int;
+      nop;
+      i = d[8]:int;
+      nop;
+      e = h[1]:int;
+      nop;
+      h[1]:int = (a = e - i);
+      nop;
+      f = h[0]:int;
+      nop;
+      h[0]:int = (i = f + i);
+      nop;
+      d[8]:int = a;
+      nop;
+      if (eqz(a)) goto B_c;
+      d[7]:int = f + e;
+      g = g - b;
+      nop;
+      b = a;
+      continue L_m;
+    }
+    unreachable;
+    label B_l:
+    if (eqz(f_pa(d, i, g))) goto B_c;
+    b = d[7]:int;
+    nop;
+    if (b - (h = i + g) > 4) continue L_f;
+    d[6]:int = h;
+    nop;
+    if (f_na(d + 20)) goto B_h;
+    goto B_c;
+    label B_i:
+    nop;
+    b = memcpy(d + 44, i, 4)[0]:int;
+    h = ((a << 1) + 1056)[0]:ushort;
+    c = h >> 11;
+    a = ((c << 2) + 1024)[0]:int;
+    nop;
+    nop;
+    e = d[1]:int;
+    nop;
+    nop;
+    g = d[0]:int;
+    nop;
+    if (e - g <= (a = (a & b) + (h & 1792)) + -1) goto B_c;
+    b = d[2]:int - e;
+    f = h & 255;
+    if (f > 16) goto B_o;
+    if (a < 8) goto B_o;
+    if (b < 16) goto B_o;
+    h = e - a;
+    f_oa(h, e);
+    f_oa(h + 8, e + 8);
+    goto B_n;
+    label B_o:
+    if (b < f + 10) goto B_p;
+    b = e - a;
+    h = e;
+    a = f;
+    loop L_r {
+      g = h - b;
+      if (g >= 8) goto B_q;
+      f_oa(b, h);
+      h = h + g;
+      a = a - g;
+      continue L_r;
+    }
+    unreachable;
+    label B_q:
+    loop L_s {
+      if (a < 1) goto B_n;
+      f_oa(b, h);
+      a = a + -8;
+      h = h + 8;
+      b = b + 8;
+      continue L_s;
+    }
+    unreachable;
+    label B_p:
+    if (b < f) goto B_c;
+    b = f + 1;
+    g = 0 - a;
+    h = e;
+    loop L_t {
+      a = (h + g)[0]:ubyte;
+      nop;
+      h[0]:byte = a;
+      h = h + 1;
+      nop;
+      b = b + -1;
+      if (b > 1) continue L_t;
+    }
+    label B_n:
+    d[1]:int = e + f;
+    nop;
+    b = d[7]:int;
+    nop;
+    if (b - (h = i + c) > 4) continue L_f;
+    d[6]:int = h;
+    nop;
+    if (eqz(f_na(d + 20))) goto B_c;
+    label B_h:
+    h = d[6]:int;
+    nop;
+    continue L_f;
+  }
+  unreachable;
+  label B_d:
+  d[4]:int = e;
+  nop;
+  d[3]:int = f;
+  nop;
+  goto B_b;
+  label B_c:
+  h = d[5]:int;
+  nop;
+  b = d[8]:int;
+  nop;
+  a = h[1]:int;
+  nop;
+  h[1]:int = a - b;
+  nop;
+  a = h[0]:int;
+  nop;
+  h[0]:int = a + b;
+  nop;
+  h = d[36]:ubyte;
+  nop;
+  if (eqz(h)) goto B_b;
+  h = d[1]:int;
+  nop;
+  b = d[2]:int;
+  nop;
+  if (h != b) goto B_b;
+  h = 0;
+  goto B_a;
+  label B_b:
+  h = -5;
+  label B_a:
+  g_a = d + 48;
+  return h;
+}
+
+export function snappy_uncompressed_length(a:int, b:int, c:int):int { // func36
+  return f_ia(a, b, c)
+}
+
+export function snappy_uncompressed_length_with_len(a:int, b:int, c:int, d:int):int { // func37
+  var e:int = 0;
+  if (d < 4) goto B_a;
+  e = f_ia(a, b, c);
+  label B_a:
+  return e;
+}
+
+export function snappy_verify_compress_len(a:int, b:int):int { // func38
+  return a < b
+}
+
+function f_na(a:{ a:int, b:int, c:int, d:int, e:byte }):int { // func39
+  var f:int;
+  var d:int;
+  var e:int;
+  var g:int;
+  var b:int = a.b;
+  nop;
+  var c:{ a:int, b:int } = a.c;
+  nop;
+  if (b != c) goto B_b;
+  c = a.a;
+  nop;
+  d = a.d;
+  nop;
+  e = c.b;
+  nop;
+  c.b = (f = e - d);
+  nop;
+  g = c.a;
+  nop;
+  c.a = (b = g + d);
+  nop;
+  a.d = f;
+  nop;
+  if (e != d) goto B_c;
+  a.e = 1;
+  nop;
+  goto B_a;
+  label B_c:
+  a.c = (c = g + e);
+  nop;
+  label B_b:
+  d = ((b[0]:ubyte << 1) + 1056)[0]:ushort;
+  nop;
+  nop;
+  c = c - b;
+  if (c >= (g = (d >> 11) + 1)) goto B_e;
+  var h:int = memmove(a + 17, b, c);
+  b = a.a;
+  nop;
+  e = a.d;
+  nop;
+  d = b[1]:int;
+  nop;
+  b[1]:int = (d = d - e);
+  nop;
+  f = b[0]:int;
+  nop;
+  b[0]:int = (f = f + e);
+  nop;
+  a.d = 0;
+  nop;
+  loop L_g {
+    if (g <= c) goto B_f;
+    if (eqz(d)) goto B_a;
+    memcpy(h + c, f, e = select_if(b = g - c, d, b < d));
+    b = a.a;
+    nop;
+    d = b[1]:int;
+    nop;
+    b[1]:int = (d = d - e);
+    nop;
+    f = b[0]:int;
+    nop;
+    b[0]:int = (f = f + e);
+    c = e + c;
+    nop;
+    continue L_g;
+  }
+  unreachable;
+  label B_f:
+  a.b = h;
+  nop;
+  a.c = h + g;
+  nop;
+  goto B_d;
+  label B_e:
+  if (c > 4) goto B_h;
+  d = memmove(a + 17, b, c);
+  b = a.a;
+  nop;
+  e = a.d;
+  nop;
+  g = b[1]:int;
+  nop;
+  b[1]:int = g - e;
+  nop;
+  g = b[0]:int;
+  nop;
+  b[0]:int = g + e;
+  nop;
+  a.d = 0;
+  nop;
+  a.b = d;
+  nop;
+  a.c = d + c;
+  nop;
+  goto B_d;
+  label B_h:
+  a.b = b;
+  nop;
+  label B_d:
+  return 1;
+  label B_a:
+  return 0;
+}
+
+function f_oa(a:int, b:int) { // func40
+  var c:int = g_a - 16;
+  g_a = c;
+  memcpy(memcpy(b, memcpy(c + 12, a, 4), 4) + 4,
+         memcpy(c + 8, a + 4, 4),
+         4);
+  g_a = c + 16;
+}
+
+function f_pa(a:int_ptr, b:int, c:int):int { // func41
+  var d:int = a[1];
+  nop;
+  var e:int = a[2];
+  nop;
+  e = e - d;
+  if (e < c) goto B_a;
+  a[1] = memcpy(d, b, c) + c;
+  nop;
+  label B_a:
+  return e >= c;
+}
+
+export function memmove(a:int, b:ubyte_ptr, c:int):int { // func42
+  var d:byte_ptr;
+  var e:int;
+  if (a == b) goto B_a;
+  if (eqz(c)) goto B_a;
+  if (a < b) goto B_b;
+  d = b + -1;
+  e = a + -1;
+  loop L_c {
+    if (eqz(c)) goto B_a;
+    b = (d + c)[0]:ubyte;
+    nop;
+    (e + c)[0]:byte = b;
+    c = c + -1;
+    nop;
+    continue L_c;
+  }
+  unreachable;
+  label B_b:
+  d = a;
+  loop L_d {
+    if (eqz(c)) goto B_a;
+    e = b[0];
+    nop;
+    d[0] = e;
+    d = d + 1;
+    b = b + 1;
+    c = c + -1;
+    nop;
+    continue L_d;
+  }
+  unreachable;
+  label B_a:
+  return a;
+}
+
+export function malloc(a:int):int { // func43
+  return mem1_alloc(a)
+}
+
+export function memset(a:int, b:int, c:int):int { // func44
+  var d:int = 0;
+  return loop L_a {
+           if (c != d) goto B_b;
+           return a;
+           label B_b:
+           (a + d)[0]:byte = b;
+           d = d + 1;
+           nop;
+           continue L_a;
+         }
+}
+
+function f_ta(a:int_ptr, b:int, c:int) { // func45
+  var d:int = a[0];
+  nop;
+  if (d == b) goto B_a;
+  memcpy(d, b, c);
+  b = a[0];
+  nop;
+  label B_a:
+  a[0] = b + c;
+  nop;
+}
+
+function f_ua(a:int, b:int):int { // func46
+  var c:int = g_a - 16;
+  g_a = c;
+  a = memcpy(c + 12, a, 4)[0]:int;
+  nop;
+  g_a = c + 16;
+  return a * 506832829 >> b;
+}
+
+function f_va(a:byte_ptr, b:int, c:int, d:int):int { // func47
+  var f:byte_ptr;
+  var e:int = c + -1;
+  if (c < 61) goto B_d;
+  d = 1;
+  loop L_e {
+    f = a + d;
+    if (e < 1) goto B_c;
+    f[0] = e;
+    d = d + 1;
+    e = e >> 8;
+    nop;
+    continue L_e;
+  }
+  unreachable;
+  label B_d:
+  a[0] = e << 2;
+  f = a + 1;
+  nop;
+  if (c > 16) goto B_b;
+  if (eqz(d)) goto B_b;
+  f_oa(b, f);
+  f_oa(b + 8, a + 9);
+  goto B_a;
+  label B_c:
+  a[0] = (d << 2) + -24;
+  nop;
+  label B_b:
+  f = memcpy(f, b, c);
+  label B_a:
+  return f + c;
+}
+
+function f_wa(a:{ a:byte, b:byte }, b:int, c:int):int { // func48
+  var d:int_ptr = g_a - 16;
+  g_a = d;
+  if (b > 2047) goto B_b;
+  if (c > 11) goto B_b;
+  a.a = (c << 2) + (b >> 3 & 224) + 241;
+  nop;
+  a.b = b;
+  a = a + 2;
+  nop;
+  goto B_a;
+  label B_b:
+  a.a = (c << 2) + -2;
+  nop;
+  d[3] = b;
+  nop;
+  memcpy(a + 1, d + 12, 2);
+  a = a + 3;
+  label B_a:
+  g_a = d + 16;
+  return a;
+}
+
+function f_xa(a:int, b:int):int { // func49
+  var c:int = g_a - 16;
+  g_a = c;
+  b = memcpy(c + 12, a + b, 4)[0]:int;
+  nop;
+  g_a = c + 16;
+  return b;
+}
+
+export function calloc(a:int, b:int):int { // func50
+  b = b * a;
+  a = mem1_alloc(b);
+  if (eqz(a)) goto B_a;
+  memset(a, 0, b);
+  label B_a:
+  return a;
+}
+
+export function realloc(a:int, b:int):int { // func51
+  var c:int;
+  if (a) goto B_a;
+  return mem1_alloc(b);
+  label B_a:
+  if (b) goto B_d;
+  mem1_free(a);
+  goto B_c;
+  label B_d:
+  c = mem1_alloc(b);
+  if (c) goto B_b;
+  label B_c:
+  return 0;
+  label B_b:
+  return memcpy(c, a, b);
+}
+
+export function mem0_load8(a:int):int { // func52
+  var b:int = g_a;
+  var c:int = 16;
+  var d:int_ptr = b - c;
+  d[3] = a;
+  var e:ubyte_ptr = d[3];
+  var f:int = e[0];
+  var g:int = 255;
+  var h:int = f & g;
+  return h;
+}
+
+export function mem0_store8(a:int, b:int) { // func53
+  var c:int = g_a;
+  var d:int = 16;
+  var e:int = c - d;
+  e[3]:int = a;
+  e[11]:byte = b;
+  var f:int = e[11]:ubyte;
+  var g:byte_ptr = e[3]:int;
+  g[0] = f;
+}
+
+export function mem1_load8(a:ubyte_ptr):int { // func54
+  var b:int_ptr = g_a - 16;
+  b[3] = a;
+  nop;
+  a = b[3];
+  nop;
+  a = a[0];
+  nop;
+  return a;
+}
+
+export function mem1_store8(a:int, b:int) { // func55
+  var c:int = g_a - 16;
+  c[3]:int = a;
+  nop;
+  c[11]:byte = b;
+  nop;
+  a = c[11]:ubyte;
+  nop;
+  c = c[3]:int;
+  nop;
+  c[0]:byte = a;
+  nop;
+}
+
+export function mem1_alloc(a:int):int { // func56
+  var b:int = g_a - 48;
+  g_a = b;
+  b[10]:int = a;
+  nop;
+  f_fb();
+  b[9]:int = 16;
+  nop;
+  a = 0[3468367]:int;
+  nop;
+  b[8]:int = a + 15 & -16;
+  nop;
+  var d:long = b[8]:uint;
+  nop;
+  var e:long = b[10]:uint;
+  nop;
+  b[3]:long = d + e;
+  nop;
+  d = b[3]:long;
+  nop;
+  e = 0[3468368]:uint;
+  nop;
+  if (d <= e) goto B_b;
+  d = b[3]:long;
+  nop;
+  e = 0[3468368]:uint;
+  nop;
+  b[5]:int = d - e;
+  nop;
+  a = b[5]:int;
+  nop;
+  b[4]:int = (a + f_gb() + -1) / f_gb();
+  nop;
+  a = b[4]:int;
+  nop;
+  a = memory_grow(a);
+  nop;
+  b[3]:int = a;
+  nop;
+  a = b[3]:int;
+  nop;
+  if (a != -1) goto B_c;
+  b[11]:int = 0;
+  nop;
+  goto B_a;
+  label B_c:
+  0[3468368]:int = f_hb();
+  nop;
+  label B_b:
+  a = b[8]:int;
+  nop;
+  var c:int = b[10]:int;
+  nop;
+  0[3468367]:int = a + c;
+  nop;
+  a = b[8]:int;
+  nop;
+  b[11]:int = a;
+  nop;
+  label B_a:
+  a = b[11]:int;
+  nop;
+  g_a = b + 48;
+  return a;
+}
+
+function f_fb() { // func57
+  var a:int = 0[3468368]:int;
+  nop;
+  if (a) goto B_a;
+  0[3468367]:int = 13939040;
+  nop;
+  0[3468368]:int = f_hb();
+  nop;
+  label B_a:
+}
+
+function f_gb():int { // func58
+  return 65536
+}
+
+function f_hb():int { // func59
+  var a:int = memory_size();
+  nop;
+  return a * f_gb();
+}
+
+export function mem1_free(a:int) { // func60
+  (g_a - 16)[3]:int = a;
+  nop;
+  nop;
+}
+
+export function memcpy_0_to_1(a:int, b:int, c:int) { // func61
+  var d:int = g_a;
+  var e:int = 32;
+  var f:int = d - e;
+  g_a = f;
+  f[7]:int = a;
+  f[6]:int = b;
+  f[5]:int = c;
+  var g:int = 0;
+  f[4]:int = g;
+  loop L_b {
+    var h:int = f[4]:int;
+    var i:int = f[5]:int;
+    var j:int = h < i;
+    var k:int = 1;
+    var l:int = j & k;
+    if (eqz(l)) goto B_a;
+    var m:int = f[6]:int;
+    var n:int = f[4]:int;
+    var o:int = m + n;
+    var p:int = mem0_load8(o);
+    f[15]:byte = p;
+    var q:int = f[7]:int;
+    var r:int = f[4]:int;
+    var s:int = q + r;
+    var t:int = f[15]:ubyte;
+    var u:int = 255;
+    var v:int = t & u;
+    mem1_store8(s, v);
+    var w:int = f[4]:int;
+    var x:int = 1;
+    var y:int = w + x;
+    f[4]:int = y;
+    continue L_b;
+  }
+  unreachable;
+  label B_a:
+  var z:int = 32;
+  var aa:int = f + z;
+  g_a = aa;
+}
+
+export function memcpy_1_to_0(a:int, b:int, c:int) { // func62
+  var d:int = g_a;
+  var e:int = 32;
+  var f:int = d - e;
+  g_a = f;
+  f[7]:int = a;
+  f[6]:int = b;
+  f[5]:int = c;
+  var g:int = 0;
+  f[4]:int = g;
+  loop L_b {
+    var h:int = f[4]:int;
+    var i:int = f[5]:int;
+    var j:int = h < i;
+    var k:int = 1;
+    var l:int = j & k;
+    if (eqz(l)) goto B_a;
+    var m:int = f[6]:int;
+    var n:int = f[4]:int;
+    var o:int = m + n;
+    var p:int = mem1_load8(o);
+    f[15]:byte = p;
+    var q:int = f[7]:int;
+    var r:int = f[4]:int;
+    var s:int = q + r;
+    var t:int = f[15]:ubyte;
+    var u:int = 255;
+    var v:int = t & u;
+    mem0_store8(s, v);
+    var w:int = f[4]:int;
+    var x:int = 1;
+    var y:int = w + x;
+    f[4]:int = y;
+    continue L_b;
+  }
+  unreachable;
+  label B_a:
+  var z:int = 32;
+  var aa:int = f + z;
+  g_a = aa;
+}
+
+export function mem1_ro_ptr(a:int):int { // func63
+  var b:int = g_a;
+  var c:int = 16;
+  var d:int_ptr = b - c;
+  d[3] = a;
+  var e:int = d[3];
+  return e;
+}
+
+export function mem1_out_ptr(a:int):int { // func64
+  var b:int = g_a;
+  var c:int = 16;
+  var d:int_ptr = b - c;
+  d[3] = a;
+  var e:int = d[3];
+  return e;
+}
+
+export function mem1_inout_ptr(a:int):int { // func65
+  var b:int = g_a;
+  var c:int = 16;
+  var d:int_ptr = b - c;
+  d[3] = a;
+  var e:int = d[3];
+  return e;
+}
+
+export function mem1_ro_ip(a:int):int { // func66
+  var b:int = g_a;
+  var c:int = 16;
+  var d:int_ptr = b - c;
+  d[3] = a;
+  var e:int = d[3];
+  return e;
+}
+
+export function mem1_out_ip(a:int):int { // func67
+  var b:int = g_a;
+  var c:int = 16;
+  var d:int_ptr = b - c;
+  d[3] = a;
+  var e:int = d[3];
+  return e;
+}
+
+export function mem1_inout_ip(a:int):int { // func68
+  var b:int = g_a;
+  var c:int = 16;
+  var d:int_ptr = b - c;
+  d[3] = a;
+  var e:int = d[3];
+  return e;
+}
+
+export function mem1_region_begin() { // func69
+}
+
+export function mem1_region_end() { // func70
+}
+
+export function mem0_cstrlen(a:int, b:int):int { // func71
+  var c:int = g_a;
+  var d:int = 16;
+  var e:{ a:int, b:int, c:int, d:int } = c - d;
+  g_a = e;
+  e.c = a;
+  e.b = b;
+  var f:int = 0;
+  e.a = f;
+  loop L_c {
+    var g:int = e.a;
+    var h:int = e.b;
+    var i:int = g < h;
+    var j:int = 1;
+    var k:int = i & j;
+    if (eqz(k)) goto B_b;
+    var l:int = e.c;
+    var m:int = e.a;
+    var n:int = l + m;
+    var o:int = mem0_load8(n);
+    var p:int = 255;
+    var q:int = o & p;
+    if (q) goto B_d;
+    var r:int = e.a;
+    e.d = r;
+    goto B_a;
+    label B_d:
+    var s:int = e.a;
+    var t:int = 1;
+    var u:int = s + t;
+    e.a = u;
+    continue L_c;
+  }
+  unreachable;
+  label B_b:
+  var v:int = e.b;
+  e.d = v;
+  label B_a:
+  var w:int = e.d;
+  var x:int = 16;
+  var y:int = e + x;
+  g_a = y;
+  return w;
+}
+
+export function mem0_read_le_prefix(a:int, b:int, c:int):int { // func72
+  var d:int = g_a;
+  var e:int = 32;
+  var f:int_ptr = d - e;
+  g_a = f;
+  f[7] = a;
+  f[6] = b;
+  f[5] = c;
+  var g:int = f[7];
+  var h:int = f[5];
+  var i:int = g + h;
+  f[4] = i;
+  var j:int = 0;
+  f[3] = j;
+  var k:int = f[6];
+  var l:int = 1;
+  var m:int = k >= l;
+  var n:int = 1;
+  var o:int = m & n;
+  if (eqz(o)) goto B_a;
+  var p:int = f[4];
+  var q:int = 0;
+  var r:int = p + q;
+  var s:int = mem0_load8(r);
+  var t:int = 255;
+  var u:int = s & t;
+  var v:int = f[3];
+  var w:int = v | u;
+  f[3] = w;
+  label B_a:
+  var x:int = f[6];
+  var y:int = 2;
+  var z:int = x >= y;
+  var aa:int = 1;
+  var ba:int = z & aa;
+  if (eqz(ba)) goto B_b;
+  var ca:int = f[4];
+  var da:int = 1;
+  var ea:int = ca + da;
+  var fa:int = mem0_load8(ea);
+  var ga:int = 255;
+  var ha:int = fa & ga;
+  var ia:int = 8;
+  var ja:int = ha << ia;
+  var ka:int = f[3];
+  var la:int = ka | ja;
+  f[3] = la;
+  label B_b:
+  var ma:int = f[6];
+  var na:int = 3;
+  var oa:int = ma >= na;
+  var pa:int = 1;
+  var qa:int = oa & pa;
+  if (eqz(qa)) goto B_c;
+  var ra:int = f[4];
+  var sa:int = 2;
+  var ta:int = ra + sa;
+  var ua:int = mem0_load8(ta);
+  var va:int = 255;
+  var wa:int = ua & va;
+  var xa:int = 16;
+  var ya:int = wa << xa;
+  var za:int = f[3];
+  var ab:int = za | ya;
+  f[3] = ab;
+  label B_c:
+  var bb:int = f[6];
+  var cb:int = 4;
+  var db:int = bb >= cb;
+  var eb:int = 1;
+  var fb:int = db & eb;
+  if (eqz(fb)) goto B_d;
+  var gb:int = f[4];
+  var hb:int = 3;
+  var ib:int = gb + hb;
+  var jb:int = mem0_load8(ib);
+  var kb:int = 255;
+  var lb:int = jb & kb;
+  var mb:int = 24;
+  var nb:int = lb << mb;
+  var ob:int = f[3];
+  var pb:int = ob | nb;
+  f[3] = pb;
+  label B_d:
+  var qb:int = f[3];
+  var rb:int = 32;
+  var sb:int = f + rb;
+  g_a = sb;
+  return qb;
+}
+
+export function mem1_memcmp_0_1(a:int, b:int, c:int):int { // func73
+  var d:int = g_a;
+  var e:int = 32;
+  var f:int = d - e;
+  g_a = f;
+  f[6]:int = a;
+  f[5]:int = b;
+  f[4]:int = c;
+  var g:int = 0;
+  f[3]:int = g;
+  loop L_c {
+    var h:int = f[3]:int;
+    var i:int = f[4]:int;
+    var j:int = h < i;
+    var k:int = 1;
+    var l:int = j & k;
+    if (eqz(l)) goto B_b;
+    var m:int = f[6]:int;
+    var n:int = f[3]:int;
+    var o:int = m + n;
+    var p:int = mem0_load8(o);
+    f[11]:byte = p;
+    var q:int = f[5]:int;
+    var r:int = f[3]:int;
+    var s:int = q + r;
+    var t:int = mem1_load8(s);
+    f[10]:byte = t;
+    var u:int = f[11]:ubyte;
+    var v:int = 255;
+    var w:int = u & v;
+    var x:int = f[10]:ubyte;
+    var y:int = 255;
+    var z:int = x & y;
+    var aa:int = w != z;
+    var ba:int = 1;
+    var ca:int = aa & ba;
+    if (eqz(ca)) goto B_d;
+    var da:int = f[3]:int;
+    var ea:int = 1;
+    var fa:int = da + ea;
+    f[7]:int = fa;
+    goto B_a;
+    label B_d:
+    var ga:int = f[3]:int;
+    var ha:int = 1;
+    var ia:int = ga + ha;
+    f[3]:int = ia;
+    continue L_c;
+  }
+  unreachable;
+  label B_b:
+  var ja:int = 0;
+  f[7]:int = ja;
+  label B_a:
+  var ka:int = f[7]:int;
+  var la:int = 32;
+  var ma:int = f + la;
+  g_a = ma;
+  return ka;
+}
+
+export function mem1_warn(a:int, b:int, c:int) { // func74
+  var d:int = g_a;
+  var e:int = 16;
+  var f:int_ptr = d - e;
+  f[3] = a;
+  f[2] = b;
+  f[1] = c;
+  var g:int = f[3];
+  if (g) goto B_b;
+  goto B_a;
+  label B_b:
+  var h:int_ptr = 0;
+  var i:int = h[3468369];
+  var j:int = 1;
+  var k:int = i + j;
+  var l:int_ptr = 0;
+  l[3468369] = k;
+  var m:int = f[3];
+  var n:int_ptr = 0;
+  n[3468370] = m;
+  var o:int = f[2];
+  var p:int_ptr = 0;
+  p[3468371] = o;
+  var q:int = f[1];
+  var r:int_ptr = 0;
+  r[3468372] = q;
+  label B_a:
+}
+
+export function mem1_warn_reset() { // func75
+  var a:int = 0;
+  var b:int_ptr = 0;
+  b[3468369] = a;
+  var c:int = 0;
+  var d:int_ptr = 0;
+  d[3468370] = c;
+  var e:int = 0;
+  var f:int_ptr = 0;
+  f[3468371] = e;
+  var g:int = 0;
+  var h:int_ptr = 0;
+  h[3468372] = g;
+}
+
+export function mem1_warn_count():int { // func76
+  var a:int_ptr = 0;
+  var b:int = a[3468369];
+  return b;
+}
+
+export function mem1_warn_last_code():int { // func77
+  var a:int_ptr = 0;
+  var b:int = a[3468370];
+  return b;
+}
+
+export function mem1_warn_last_arg():int { // func78
+  var a:int_ptr = 0;
+  var b:int = a[3468371];
+  return b;
+}
+
+export function mem1_warn_last_detail():int { // func79
+  var a:int_ptr = 0;
+  var b:int = a[3468372];
+  return b;
+}
+

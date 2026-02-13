@@ -1,0 +1,14 @@
+variant,stage,duration_ms,returncode,runs
+mem1,C FFI clang (wasm32 bc),88.396092,0,20
+mem1,libc_shim clang (wasm32 bc),23.675175,0,20
+mem1,Pass: insert-nop-grow (C),14.301096,0,20
+mem1,Pass: insert-nop-grow (libc_shim),11.924168,0,20
+mem1,Pass: mark-mem1-ffi (C),14.356244,0,20
+mem1,"Rust bc (mem1-rustc, wasm32)",159.263196,0,20
+mem1,Pass: inject-mem1-markers (Rust),14.234597,0,20
+mem1,llvm-link (Rust+C+libc_shim),14.575680,0,20
+mem1,Pass: rewrite-rust-alloc + rewrite-wasm-ffi,17.268017,0,20
+mem1,llc (wasm32 obj),60.437733,0,20
+mem1,wasm-ld (+mem1_runtime),13.458525,0,20
+mem1,Binaryen Mem1RewritePass,15.862881,0,20
+mem1,TOTAL,8967.355908,0,

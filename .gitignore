@@ -1,0 +1,5 @@
+libpng_bench/data/pngsuite/
+snappy_bench/vendor/snappy/
+wasm-mem1_sfi/
+libpng_bench/.venv/
+**/__pycache__/

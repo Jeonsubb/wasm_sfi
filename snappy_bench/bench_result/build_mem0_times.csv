@@ -1,0 +1,8 @@
+variant,stage,duration_ms,returncode,runs
+mem0,C FFI clang (mem0 wasm32 bc),98.801501,0,20
+mem0,libc_shim clang (mem0),26.964654,0,20
+mem0,Rust bc (rustc wasm32),62.724556,0,20
+mem0,llvm-link (mem0),16.737118,0,20
+mem0,llc (mem0 obj),69.604794,0,20
+mem0,wasm-ld (mem0 final wasm),17.227410,0,20
+mem0,TOTAL,5848.274647,0,

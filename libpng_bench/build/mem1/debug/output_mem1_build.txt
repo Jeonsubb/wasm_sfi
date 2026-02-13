@@ -1,0 +1,139 @@
+[0] pass, allocator 빌드
+[0a] 패스들 빌드 생략 (모두 존재)
+[0b] allocator 빌드 생략 (mem1_runtime.a 존재)
+=== [01] C callee -> LLVM bc ===
+=== [02] LLVM passes: insert-nop + MarkMem1FFI ===
+[MarkMem1FFI] Marked FFI function: bench_fill_target_from_pool (arg0: ptrlike, inout, len_arg=1)
+[MarkMem1FFI] Marked FFI function: c_png_encode_rgba (arg0: ptrlike, inout, len_arg=1)
+[MarkMem1FFI] Marked FFI function: c_png_encode_rgba (arg3: ptrlike, inout, len_arg=4)
+[MarkMem1FFI] Marked FFI function: c_png_encode_rgba (arg5: ptrlike, inout, len_arg=4)
+[MarkMem1FFI] Marked FFI function: c_png_decode_rgba (arg0: ptrlike, inout, len_arg=1)
+[MarkMem1FFI] Marked FFI function: c_png_decode_rgba (arg2: ptrlike, inout, len_arg=3)
+[MarkMem1FFI] Marked FFI function: c_png_decode_rgba (arg4: ptrlike, inout, len_arg=3)
+[MarkMem1FFI] Marked FFI function: c_png_decode_rgba (arg5: ptrlike, inout, len_arg=3)
+[MarkMem1FFI] Dumped mem1-ffi list to /home/ehdgns/wasm_sfi/libpng_bench/build/mem1/mem1_ffi_list.tsv
+=== [03] Rust caller -> LLVM bc ===
+[InjectMem1Markers] Loaded 2 entries from /home/ehdgns/wasm_sfi/libpng_bench/build/mem1/mem1_ro_list.tsv
+=== [04] Link + rewrite ===
+[RewriteWasmFFI] Found call to: bench_fill_target_from_pool
+[RewriteWasmFFI] bench_fill_target_from_pool has mem1-ffi attribute.
+[RewriteWasmFFI] Found call to: c_libpng_version_number
+[RewriteWasmFFI] c_libpng_version_number does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Processing pending copy-out and free operations. Post count: 1
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: __mem1_ro_ptr
+[RewriteWasmFFI] __mem1_ro_ptr does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: c_png_encode_rgba
+[RewriteWasmFFI] c_png_encode_rgba has mem1-ffi attribute.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Processing pending copy-out and free operations. Post count: 3
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: __mem1_ro_ptr
+[RewriteWasmFFI] __mem1_ro_ptr does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: c_png_decode_rgba
+[RewriteWasmFFI] c_png_decode_rgba has mem1-ffi attribute.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Processing pending copy-out and free operations. Post count: 4
+[RewriteWasmFFI] Found call to: memcmp
+[RewriteWasmFFI] memcmp does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: bench_fill_target_from_pool
+[RewriteWasmFFI] bench_fill_target_from_pool has mem1-ffi attribute.
+[RewriteWasmFFI] Found call to: c_libpng_version_number
+[RewriteWasmFFI] c_libpng_version_number does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: c_png_encode_rgba
+[RewriteWasmFFI] c_png_encode_rgba has mem1-ffi attribute.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: c_png_decode_rgba
+[RewriteWasmFFI] c_png_decode_rgba has mem1-ffi attribute.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Processing pending copy-out and free operations. Post count: 1
+[RewriteWasmFFI] Processing pending copy-out and free operations. Post count: 3
+[RewriteWasmFFI] Processing pending copy-out and free operations. Post count: 4
+[RewriteWasmFFI] Found call to: llvm.umin.i32
+[RewriteWasmFFI] llvm.umin.i32 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memcpy
+[RewriteWasmFFI] memcpy does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: png_access_version_number
+[RewriteWasmFFI] png_access_version_number does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memset
+[RewriteWasmFFI] memset does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: png_image_begin_read_from_memory
+[RewriteWasmFFI] png_image_begin_read_from_memory does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: png_image_finish_read
+[RewriteWasmFFI] png_image_finish_read does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: png_image_free
+[RewriteWasmFFI] png_image_free does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memset
+[RewriteWasmFFI] memset does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.start.p0
+[RewriteWasmFFI] llvm.lifetime.start.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: png_image_write_to_memory
+[RewriteWasmFFI] png_image_write_to_memory does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: png_image_write_to_memory
+[RewriteWasmFFI] png_image_write_to_memory does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.lifetime.end.p0
+[RewriteWasmFFI] llvm.lifetime.end.p0 does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: __mem1_alloc
+[RewriteWasmFFI] __mem1_alloc does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: __mem1_free
+[RewriteWasmFFI] __mem1_free does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: __mem1_alloc
+[RewriteWasmFFI] __mem1_alloc does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memset
+[RewriteWasmFFI] memset does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: __mem1_alloc
+[RewriteWasmFFI] __mem1_alloc does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: __mem1_free
+[RewriteWasmFFI] __mem1_free does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: __mem1_alloc
+[RewriteWasmFFI] __mem1_alloc does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: memcpy
+[RewriteWasmFFI] memcpy does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.trap
+[RewriteWasmFFI] llvm.trap does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.trap
+[RewriteWasmFFI] llvm.trap does not have mem1-ffi attribute. Skipping.
+[RewriteWasmFFI] Found call to: llvm.abs.i32
+[RewriteWasmFFI] llvm.abs.i32 does not have mem1-ffi attribute. Skipping.
+=== [05] Codegen + link ===
+=== [06] Binaryen: Mem1RewritePass ===
+error: wasm-opt does not provide --Mem1RewritePass
+hint: use the exact custom wasm-opt binary used by your snappy mem1 build

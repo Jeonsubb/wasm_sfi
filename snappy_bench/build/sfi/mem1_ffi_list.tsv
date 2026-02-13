@@ -1,0 +1,7 @@
+fn=bench_fill_target_from_pool	mem1-arg0=ptrlike=1;dir=inout;len_arg=1
+fn=snappy_uncompressed_length	mem1-arg0=ptrlike=1;dir=inout;len_arg=1	mem1-arg2=ptrlike=1;dir=inout;len_arg=1
+fn=snappy_uncompressed_length_with_len	mem1-arg0=ptrlike=1;dir=inout;len_arg=1	mem1-arg2=ptrlike=1;dir=inout;len_arg=3
+fn=snappy_compress_with_len	mem1-arg0=ptrlike=1;dir=inout;len_arg=1	mem1-arg2=ptrlike=1;dir=inout;len_arg=3	mem1-arg4=ptrlike=1;dir=inout;len_arg=5	mem1-arg6=ptrlike=1;dir=inout;len_arg=7
+fn=snappy_uncompress_with_len	mem1-arg0=ptrlike=1;dir=inout;len_arg=1	mem1-arg2=ptrlike=1;dir=inout;len_arg=3
+fn=snappy_init_env_with_len	mem1-arg0=ptrlike=1;dir=inout;len_arg=1
+fn=snappy_free_env	mem1-arg0=ptrlike=1;dir=inout
