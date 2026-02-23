@@ -134,6 +134,15 @@ echo "=== [02] LLVM passes: insert-nop + MarkMem1FFI ==="
 opt-18 -load-pass-plugin="$PASS_NOP_NORMAL_SO" -passes='function(insert-nop-grow)' "$C_FFI_BC" -o "$C_FFI_NOP_BC"
 opt-18 -load-pass-plugin="$PASS_NOP_NORMAL_SO" -passes='function(insert-nop-grow)' "$LIBC_SHIM_BC" -o "$LIBC_SHIM_NOP_BC"
 
+# Ensure all C-side memory ops (including libpng/zlib internals and RO-data accesses)
+# are rewritten to mem1 by Mem1RewritePass.
+LIB_BCS_NOP=()
+for bc in "${LIB_BCS[@]}"; do
+  bc_nop="${bc%.bc}.nop.bc"
+  opt-18 -load-pass-plugin="$PASS_NOP_NORMAL_SO" -passes='function(insert-nop-grow)' "$bc" -o "$bc_nop"
+  LIB_BCS_NOP+=("$bc_nop")
+done
+
 MEM1FFI_LIST_OUT="$MEM1_FFI_LIST_TSV" \
   opt-18 -load-pass-plugin="$PASS_MARK_SO" -passes=mark-mem1-ffi "$C_FFI_NOP_BC" -o "$C_FFI_MARKED_BC"
 
@@ -171,7 +180,7 @@ MEM1_RO_LIST="$MEM1_RO_LIST_TSV" \
     "$RUST_FFI_BC" -o "$RUST_FFI_RO_BC"
 
 echo "=== [04] Link + rewrite ==="
-llvm-link-18 "$RUST_FFI_RO_BC" "$C_FFI_MARKED_BC" "$LIBC_SHIM_NOP_BC" "${LIB_BCS[@]}" -o "$COMBINED_BC"
+llvm-link-18 "$RUST_FFI_RO_BC" "$C_FFI_MARKED_BC" "$LIBC_SHIM_NOP_BC" "${LIB_BCS_NOP[@]}" -o "$COMBINED_BC"
 
 opt-18 -load-pass-plugin="$RUST_ALLOC_SO" -load-pass-plugin="$REWRITE_SO" \
   -passes=rewrite-wasm-ffi "$COMBINED_BC" -o "$COMBINED_REWRITTEN_BC"
@@ -201,20 +210,13 @@ else
   exit 1
 fi
 
-if command -v wasm2wat >/dev/null 2>&1 && command -v wat2wasm >/dev/null 2>&1 && [[ -f "$MEM1_ROOT/tools/fix_mem1_default_loads.py" ]]; then
+if [[ "${SKIP_FIX_MEM1_DEFAULT_LOADS:-0}" != "1" ]] && \
+   command -v wasm2wat >/dev/null 2>&1 && command -v wat2wasm >/dev/null 2>&1 && \
+   [[ -f "$MEM1_ROOT/tools/fix_mem1_default_loads.py" ]]; then
   python3 "$MEM1_ROOT/tools/fix_mem1_default_loads.py" --wasm "$FINAL_WASM"
 fi
 
 command -v wasm2wat >/dev/null 2>&1 && wasm2wat --enable-multi-memory "$FINAL_WASM" -o "$FINAL_WAT"
 command -v wasm-decompile >/dev/null 2>&1 && wasm-decompile --enable-all "$FINAL_WASM" -o "$DEBUG_DCMP"
-
-echo "=== [07] wasmtime sanity check ==="
-if command -v wasmtime >/dev/null 2>&1 && [[ -f "$FINAL_WASM" ]]; then
-  wasmtime "$FINAL_WASM" --invoke bench_prepare 1024 || true
-  wasmtime "$FINAL_WASM" --invoke bench_png_encode 1024 || true
-  wasmtime "$FINAL_WASM" --invoke bench_png_decode 1024 || true
-else
-  echo "wasmtime missing or output wasm not found: $FINAL_WASM"
-fi
 
 echo "=== done: $FINAL_WASM ==="

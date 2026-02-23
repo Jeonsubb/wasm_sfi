@@ -3,13 +3,16 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-: "${BENCH_MIN_POW:=10}"
-: "${BENCH_MAX_POW:=21}"
 : "${BENCH_RUNS:=5}"
 
-export BENCH_MIN_POW BENCH_MAX_POW BENCH_RUNS
+export BENCH_RUNS
 
-python3 "$ROOT/run_bench_mem0.py"
-python3 "$ROOT/run_bench_mem1.py"
-python3 "$ROOT/run_bench_sfi.py"
-python3 "$ROOT/bench_analysis.py"
+PYTHON_BIN="${PYTHON_BIN:-python3}"
+if [[ -x "$ROOT/.venv/bin/python" ]]; then
+  PYTHON_BIN="$ROOT/.venv/bin/python"
+fi
+
+"$PYTHON_BIN" "$ROOT/run_bench_pngsuite.py" mem0
+"$PYTHON_BIN" "$ROOT/run_bench_pngsuite.py" mem1
+"$PYTHON_BIN" "$ROOT/run_bench_pngsuite.py" sfi
+"$PYTHON_BIN" "$ROOT/bench_analysis_decode_only.py"

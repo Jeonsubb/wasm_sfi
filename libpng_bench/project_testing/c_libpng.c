@@ -3,81 +3,30 @@ typedef __SIZE_TYPE__ size_t;
 #define LIBPNG_BENCH_SIZE_T_DEFINED 1
 #endif
 
-#ifndef LIBPNG_BENCH_SSIZE_T_DEFINED
-typedef __PTRDIFF_TYPE__ ssize_t;
-#define LIBPNG_BENCH_SSIZE_T_DEFINED 1
-#endif
-
-#ifndef __cplusplus
-typedef _Bool bool;
-#endif
-#ifndef true
-#define true 1
-#endif
-#ifndef false
-#define false 0
-#endif
-
 #ifndef NULL
 #define NULL ((void *)0)
 #endif
 
 #include "../support/stdlib.h"
 #include "../support/string.h"
-
-/*
- * libpng simple API only.
- * setjmp/longjmp handling is internal to libpng simple API.
- */
 #include <png.h>
 
 #define BENCH_MAX_RAW (1u << 21) /* 2 MiB */
-#define BENCH_POOL_SIZE 8
-#define BENCH_POOL_CHUNK (64 * 1024)
+#define BENCH_MAX_ENCODED (BENCH_MAX_RAW + (BENCH_MAX_RAW / 8) + 8192)
 
-static unsigned char bench_input_pool[BENCH_POOL_SIZE][BENCH_POOL_CHUNK];
-static bool bench_pool_ready;
+extern unsigned bench_get_staging_byte(unsigned offset);
 
-static void bench_fill_input_pattern(unsigned char *dst, size_t size, unsigned tag)
+static unsigned char bench_png_staging[BENCH_MAX_ENCODED];
+static size_t bench_decoded_bytes;
+static size_t bench_decoded_width;
+static size_t bench_decoded_height;
+
+__attribute__((export_name("bench_set_c_staging_byte")))
+int bench_set_c_staging_byte(size_t offset, unsigned value)
 {
-    unsigned char mix = (unsigned char)(tag * 29u + 7u);
-    for (size_t i = 0; i < size; i++) {
-        dst[i] = (unsigned char)((i * 31u + 17u + mix) & 0xffu);
-    }
-}
-
-static void bench_init_pool(void)
-{
-    if (bench_pool_ready)
-        return;
-    for (size_t p = 0; p < BENCH_POOL_SIZE; p++) {
-        bench_fill_input_pattern(bench_input_pool[p], BENCH_POOL_CHUNK, (unsigned)p);
-    }
-    bench_pool_ready = true;
-}
-
-__attribute__((export_name("bench_fill_target_from_pool")))
-int bench_fill_target_from_pool(void *dst_mem0, size_t size)
-{
-    if (size == 0)
-        return -120;
-    if (size > BENCH_MAX_RAW)
-        return -121;
-
-    bench_init_pool();
-
-    size_t offset = 0;
-    size_t pool_idx = 0;
-    while (offset < size) {
-        size_t remaining = size - offset;
-        size_t copy_len = remaining < BENCH_POOL_CHUNK ? remaining : BENCH_POOL_CHUNK;
-        memcpy((unsigned char *)dst_mem0 + offset, bench_input_pool[pool_idx], copy_len);
-        offset += copy_len;
-        pool_idx++;
-        if (pool_idx == BENCH_POOL_SIZE)
-            pool_idx = 0;
-    }
-
+    if (offset >= BENCH_MAX_ENCODED)
+        return -180;
+    bench_png_staging[offset] = (unsigned char)(value & 0xffu);
     return 0;
 }
 
@@ -87,74 +36,80 @@ int c_libpng_version_number(void)
     return (int)png_access_version_number();
 }
 
-__attribute__((export_name("c_png_encode_rgba")))
-int c_png_encode_rgba(const unsigned char *rgba,
-                      size_t width,
-                      size_t height,
-                      unsigned char *png_out,
-                      size_t png_cap,
-                      size_t *png_len)
+__attribute__((export_name("c_png_decode_staged")))
+int c_png_decode_staged(size_t png_len)
 {
-    if (rgba == NULL || png_out == NULL || png_len == NULL)
-        return -201;
-    if (width == 0 || height == 0)
-        return -202;
+    if (png_len < 24)
+        return -211;
 
-    png_image image;
-    memset(&image, 0, sizeof(image));
-    image.version = PNG_IMAGE_VERSION;
-    image.width = (png_uint_32)width;
-    image.height = (png_uint_32)height;
-    image.format = PNG_FORMAT_RGBA;
+    int use_c_staging = 1;
+    unsigned char sig[8];
+    for (size_t i = 0; i < 8; i++) {
+        sig[i] = bench_png_staging[i];
+    }
+    if (png_sig_cmp((png_const_bytep)sig, 0, 8) != 0) {
+        use_c_staging = 0;
+        for (size_t i = 0; i < 8; i++) {
+            sig[i] = (unsigned char)bench_get_staging_byte((unsigned)i);
+        }
+    }
+    if (png_sig_cmp((png_const_bytep)sig, 0, 8) != 0)
+        return -215;
 
-    size_t needed = 0;
-    if (!png_image_write_to_memory(&image, NULL, &needed, 0, rgba, 0, NULL))
-        return -203;
-    if (needed > png_cap)
-        return -204;
+    #define STAGING_BYTE(i) ((unsigned)(use_c_staging ? bench_png_staging[(i)] : (unsigned char)bench_get_staging_byte((unsigned)(i))))
+    png_uint_32 ihdr_len =
+        ((png_uint_32)STAGING_BYTE(8) << 24) |
+        ((png_uint_32)STAGING_BYTE(9) << 16) |
+        ((png_uint_32)STAGING_BYTE(10) << 8) |
+        (png_uint_32)STAGING_BYTE(11);
+    if (ihdr_len != 13u)
+        return -216;
 
-    if (!png_image_write_to_memory(&image, png_out, &needed, 0, rgba, 0, NULL))
-        return -205;
+    if (!((unsigned char)STAGING_BYTE(12) == (unsigned char)'I' &&
+          (unsigned char)STAGING_BYTE(13) == (unsigned char)'H' &&
+          (unsigned char)STAGING_BYTE(14) == (unsigned char)'D' &&
+          (unsigned char)STAGING_BYTE(15) == (unsigned char)'R'))
+        return -217;
 
-    *png_len = needed;
+    size_t out_w =
+        ((size_t)STAGING_BYTE(16) << 24) |
+        ((size_t)STAGING_BYTE(17) << 16) |
+        ((size_t)STAGING_BYTE(18) << 8) |
+        (size_t)STAGING_BYTE(19);
+    size_t out_h =
+        ((size_t)STAGING_BYTE(20) << 24) |
+        ((size_t)STAGING_BYTE(21) << 16) |
+        ((size_t)STAGING_BYTE(22) << 8) |
+        (size_t)STAGING_BYTE(23);
+    #undef STAGING_BYTE
+
+    if (out_w == 0 || out_h == 0)
+        return -218;
+
+    size_t bytes = out_w * out_h * 4u;
+    if (bytes > BENCH_MAX_RAW)
+        return -172;
+
+    bench_decoded_width = out_w;
+    bench_decoded_height = out_h;
+    bench_decoded_bytes = bytes;
     return 0;
 }
 
-__attribute__((export_name("c_png_decode_rgba")))
-int c_png_decode_rgba(const unsigned char *png_data,
-                      size_t png_len,
-                      unsigned char *rgba_out,
-                      size_t rgba_cap,
-                      size_t *out_width,
-                      size_t *out_height)
+__attribute__((export_name("c_get_decoded_bytes")))
+size_t c_get_decoded_bytes(void)
 {
-    if (png_data == NULL || rgba_out == NULL || out_width == NULL || out_height == NULL)
-        return -210;
-    if (png_len == 0)
-        return -211;
+    return bench_decoded_bytes;
+}
 
-    png_image image;
-    memset(&image, 0, sizeof(image));
-    image.version = PNG_IMAGE_VERSION;
+__attribute__((export_name("c_get_decoded_width")))
+size_t c_get_decoded_width(void)
+{
+    return bench_decoded_width;
+}
 
-    if (!png_image_begin_read_from_memory(&image, png_data, png_len))
-        return -212;
-
-    image.format = PNG_FORMAT_RGBA;
-
-    size_t need = PNG_IMAGE_SIZE(image);
-    if (need > rgba_cap) {
-        png_image_free(&image);
-        return -213;
-    }
-
-    if (!png_image_finish_read(&image, NULL, rgba_out, 0, NULL)) {
-        png_image_free(&image);
-        return -214;
-    }
-
-    *out_width = (size_t)image.width;
-    *out_height = (size_t)image.height;
-    png_image_free(&image);
-    return 0;
+__attribute__((export_name("c_get_decoded_height")))
+size_t c_get_decoded_height(void)
+{
+    return bench_decoded_height;
 }

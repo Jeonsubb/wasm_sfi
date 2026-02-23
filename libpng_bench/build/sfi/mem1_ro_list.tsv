@@ -1,3 +1,0 @@
-caller=bench_png_encode	callee=c_png_encode_rgba	call_index=0	arg_index=0	kind=ptr
-caller=bench_png_decode	callee=c_png_decode_rgba	call_index=0	arg_index=0	kind=ptr
-caller=bench_png_decode_external	callee=c_png_decode_rgba	call_index=0	arg_index=0	kind=ptr

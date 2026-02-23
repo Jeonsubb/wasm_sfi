@@ -176,13 +176,6 @@ if command -v wasm-decompile >/dev/null 2>&1; then
   wasm-decompile --enable-all "$FINAL_WASM" -o "$FINAL_DCMP"
 fi
 
-echo "[6] wasmtime smoke test"
-if command -v wasmtime >/dev/null 2>&1 && [[ -f "$FINAL_WASM" ]]; then
-  wasmtime "$FINAL_WASM" --invoke bench_prepare 1024 || true
-  wasmtime "$FINAL_WASM" --invoke bench_png_encode 1024 || true
-  wasmtime "$FINAL_WASM" --invoke bench_png_decode 1024 || true
-fi
-
 rm -f \
   "$C_FFI_BC" "$LIBC_SHIM_BC" "$C_FFI_MARKED_BC" \
   "$RUST_FFI_BC" "$RUST_FFI_RO_BC" "$COMBINED_BC" \

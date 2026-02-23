@@ -1,13 +1,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-// mem1 런타임 심볼( mem1 전용 빌드에서만 제공됨 )
 extern void* __mem1_alloc(uint32_t size);
 extern void __mem1_free(void* p);
-
-// ----------------------------------------------------------------
-// 1. 기존 메모리/문자열 함수들
-// ----------------------------------------------------------------
 
 int memcmp(const void* a, const void* b, size_t n) {
     const uint8_t* p = (const uint8_t*)a;
@@ -42,10 +37,6 @@ void* memset(void* dst, int c, size_t n) {
     for (size_t i = 0; i < n; ++i) d[i] = (uint8_t)c;
     return dst;
 }
-
-// ----------------------------------------------------------------
-// 2. mem1 전용 malloc / free
-// ----------------------------------------------------------------
 
 void* malloc(size_t n) {
     return __mem1_alloc((uint32_t)n);
