@@ -1,5 +1,0 @@
-file,variant,run,png_bytes,decoded_bytes,width,height,us,compression_ratio,ret
-basi0g01.png,mem1,0,217,4096,32,32,553.803,0.052979,0
-basi0g02.png,mem1,0,154,4096,32,32,283.358,0.037598,0
-basi0g04.png,mem1,0,247,4096,32,32,182.829,0.060303,0
-basi0g08.png,mem1,0,254,4096,32,32,199.284,0.062012,0

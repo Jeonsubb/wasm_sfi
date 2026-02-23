@@ -1,5 +1,0 @@
-file,variant,run,png_bytes,decoded_bytes,width,height,us,compression_ratio,ret
-basi0g01.png,sfi,0,217,4096,32,32,755.154,0.052979,0
-basi0g02.png,sfi,0,154,4096,32,32,177.306,0.037598,0
-basi0g04.png,sfi,0,247,4096,32,32,164.558,0.060303,0
-basi0g08.png,sfi,0,254,4096,32,32,165.616,0.062012,0

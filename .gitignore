@@ -1,4 +1,6 @@
 libpng_bench/data/pngsuite/
+libpng_bench/build/
+libpng_bench/bench_result/
 snappy_bench/vendor/snappy/
 wasm-mem1_sfi/
 libpng_bench/.venv/
