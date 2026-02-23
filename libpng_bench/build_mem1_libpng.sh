@@ -213,7 +213,10 @@ fi
 if [[ "${SKIP_FIX_MEM1_DEFAULT_LOADS:-0}" != "1" ]] && \
    command -v wasm2wat >/dev/null 2>&1 && command -v wat2wasm >/dev/null 2>&1 && \
    [[ -f "$MEM1_ROOT/tools/fix_mem1_default_loads.py" ]]; then
-  python3 "$MEM1_ROOT/tools/fix_mem1_default_loads.py" --wasm "$FINAL_WASM"
+  python3 "$MEM1_ROOT/tools/fix_mem1_default_loads.py" \
+    --wasm "$FINAL_WASM" \
+    --min-explicit1 "${FIX_MEM1_MIN_EXPLICIT1:-1}" \
+    --min-ratio "${FIX_MEM1_MIN_RATIO:-0.0}"
 fi
 
 command -v wasm2wat >/dev/null 2>&1 && wasm2wat --enable-multi-memory "$FINAL_WASM" -o "$FINAL_WAT"

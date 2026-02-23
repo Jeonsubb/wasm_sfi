@@ -43,7 +43,8 @@ if [[ ! -f "$ZLIB_SRC_DIR/zlib.h" ]] || [[ ! -f "$ZLIB_SRC_DIR/deflate.c" ]]; th
   exit 1
 fi
 
-SFI_C_BASE=${SFI_C_BASE:-$((2 * 65536))}
+# Full libpng decode keeps static data below 2 pages, so include low memory.
+SFI_C_BASE=${SFI_C_BASE:-0}
 SFI_C_END=${SFI_C_END:-$((SFI_C_BASE + 256 * 65536))}
 SFI_C_STACK_TOP=${SFI_C_STACK_TOP:-$SFI_C_END}
 SFI_C_HEAP_BASE=${SFI_C_HEAP_BASE:-$((SFI_C_BASE + 4096))}
@@ -73,9 +74,8 @@ if (( ${#missing_passes[@]} > 0 )); then
   "$SFI_ROOT/build_passes.sh"
 fi
 
-if [[ ! -f "$SFI_RUNTIME_A" ]]; then
-  "$SFI_DIR/build_sfi_runtime.sh"
-fi
+# Keep runtime bounds in sync with this build's SFI_C_* settings.
+"$SFI_DIR/build_sfi_runtime.sh"
 
 echo "[1] C code -> LLVM bc"
 clang-18 --target=wasm32-unknown-unknown -Oz -ffreestanding ${CFLAGS_LIBPNG_EFFECTIVE} \
@@ -147,9 +147,20 @@ MEM1_RO_LIST="$MEM1_RO_LIST_TSV" \
 echo "[3] link + rewrite-wasm-ffi + sfi-bounds-check"
 llvm-link-18 "$RUST_FFI_RO_BC" "$C_FFI_MARKED_BC" "$LIBC_SHIM_BC" "${LIB_BCS[@]}" -o "$COMBINED_BC"
 
-opt-18 -load-pass-plugin="$REWRITE_SO" -load-pass-plugin="$SFI_BOUNDS_SO" \
-  -passes=rewrite-wasm-ffi,sfi-bounds-check \
-  "$COMBINED_BC" -o "$COMBINED_SFI_BC"
+SFI_LLVM_PASSES="rewrite-wasm-ffi,sfi-bounds-check"
+if [[ "${SKIP_SFI_BOUNDS_CHECK:-0}" == "1" ]]; then
+  SFI_LLVM_PASSES="rewrite-wasm-ffi"
+fi
+
+if [[ "$SFI_LLVM_PASSES" == "rewrite-wasm-ffi" ]]; then
+  opt-18 -load-pass-plugin="$REWRITE_SO" \
+    -passes="$SFI_LLVM_PASSES" \
+    "$COMBINED_BC" -o "$COMBINED_SFI_BC"
+else
+  opt-18 -load-pass-plugin="$REWRITE_SO" -load-pass-plugin="$SFI_BOUNDS_SO" \
+    -passes="$SFI_LLVM_PASSES" \
+    "$COMBINED_BC" -o "$COMBINED_SFI_BC"
+fi
 
 echo "[4] codegen + wasm link"
 llc-18 -filetype=obj -march=wasm32 "$COMBINED_SFI_BC" -o "$COMBINED_O"
