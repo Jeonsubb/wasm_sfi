@@ -1,0 +1,5 @@
+| variant | total_runs | success_runs | error_runs | success_rate(%) | mean_us | p50_us | mem1_over_mem0_geomean | sfi_over_mem0_geomean |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| mem0 | 40 | 40 | 0 | 100.00 | 402.039 | 352.905 |  | 1.000000 |
+| mem1 | 40 | 40 | 0 | 100.00 | 442.514 | 390.577 | 1.137341 |  |
+| sfi | 40 | 40 | 0 | 100.00 | 571.466 | 515.550 |  | 1.553727 |

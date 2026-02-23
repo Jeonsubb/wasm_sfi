@@ -6,8 +6,6 @@ use core::panic::PanicInfo;
 const BENCH_MAX_RAW: usize = 1 << 21; // 2 MiB
 const BENCH_MAX_ENCODED: usize = BENCH_MAX_RAW + (BENCH_MAX_RAW / 8) + 8192;
 
-static mut BENCH_ENCODED: [u8; BENCH_MAX_ENCODED] = [0; BENCH_MAX_ENCODED];
-
 static mut BENCH_READY: bool = false;
 static mut BENCH_ENCODED_LEN: usize = 0;
 static mut BENCH_DECODED_BYTES: usize = 0;
@@ -19,11 +17,13 @@ extern "C" {
     fn c_get_decoded_bytes() -> usize;
     fn c_get_decoded_width() -> usize;
     fn c_get_decoded_height() -> usize;
+    fn c_get_staging_ptr() -> usize;
+    fn bench_set_c_staging_byte(offset: usize, value: u32) -> i32;
 }
 
 #[no_mangle]
 pub extern "C" fn bench_get_staging_ptr() -> usize {
-    unsafe { BENCH_ENCODED.as_mut_ptr() as usize }
+    unsafe { c_get_staging_ptr() }
 }
 
 #[no_mangle]
@@ -37,10 +37,7 @@ pub extern "C" fn bench_set_staging_byte(offset: u32, value: u32) -> i32 {
     if idx >= BENCH_MAX_ENCODED {
         return -180;
     }
-    unsafe {
-        BENCH_ENCODED[idx] = (value & 0xff) as u8;
-    }
-    0
+    unsafe { bench_set_c_staging_byte(idx, value & 0xff) }
 }
 
 #[no_mangle]
@@ -49,7 +46,8 @@ pub extern "C" fn bench_get_staging_byte(offset: u32) -> u32 {
     if idx >= BENCH_MAX_ENCODED {
         return 0;
     }
-    unsafe { BENCH_ENCODED[idx] as u32 }
+    let ptr = unsafe { c_get_staging_ptr() } as *const u8;
+    unsafe { ptr.add(idx).read() as u32 }
 }
 
 #[no_mangle]
