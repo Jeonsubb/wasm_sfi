@@ -31,7 +31,7 @@
       local.tee 2
       i32.const 1568
       local.get 0
-      call 61
+      memory.copy 1 0
       local.get 2
       local.get 0
       call 2
@@ -39,7 +39,7 @@
       i32.const 1568
       local.get 2
       local.get 0
-      call 62
+      memory.copy 0 1
       local.get 2
       call 60
       local.get 1
@@ -236,7 +236,7 @@
         local.tee 3
         i32.const 13283580
         i32.const 12
-        call 61
+        memory.copy 1 0
         local.get 3
         i32.const 12
         call 4
@@ -244,7 +244,7 @@
         i32.const 13283580
         local.get 3
         i32.const 12
-        call 62
+        memory.copy 0 1
         local.get 3
         call 60
         local.get 4
@@ -275,19 +275,19 @@
       local.tee 2
       i32.const 13283580
       i32.const 12
-      call 61
+      memory.copy 1 0
       local.get 0
       call 56
       local.tee 4
       i32.const 1568
       local.get 0
-      call 61
+      memory.copy 1 0
       local.get 3
       call 56
       local.tee 5
       i32.const 4195872
       local.get 3
-      call 61
+      memory.copy 1 0
       i32.const 4
       call 56
       local.tee 6
@@ -295,7 +295,7 @@
       i32.const 12
       i32.add
       i32.const 4
-      call 61
+      memory.copy 1 0
       local.get 2
       i32.const 12
       local.get 4
@@ -309,19 +309,19 @@
       i32.const 13283580
       local.get 2
       i32.const 12
-      call 62
+      memory.copy 0 1
       local.get 2
       call 60
       i32.const 1568
       local.get 4
       local.get 0
-      call 62
+      memory.copy 0 1
       local.get 4
       call 60
       i32.const 4195872
       local.get 5
       local.get 3
-      call 62
+      memory.copy 0 1
       local.get 5
       call 60
       local.get 1
@@ -329,7 +329,7 @@
       i32.add
       local.get 6
       i32.const 4
-      call 62
+      memory.copy 0 1
       local.get 6
       call 60
       i32.const -94
@@ -452,13 +452,13 @@
       local.tee 3
       i32.const 4195872
       local.get 2
-      call 61
+      memory.copy 1 0
       local.get 0
       call 56
       local.tee 4
       i32.const 9089258
       local.get 0
-      call 61
+      memory.copy 1 0
       local.get 3
       local.get 2
       local.get 4
@@ -468,13 +468,13 @@
       i32.const 4195872
       local.get 3
       local.get 2
-      call 62
+      memory.copy 0 1
       local.get 3
       call 60
       i32.const 9089258
       local.get 4
       local.get 0
-      call 62
+      memory.copy 0 1
       local.get 4
       call 60
       i32.const 0
@@ -3350,224 +3350,16 @@
     nop)
   (func (;61;) (type 6) (param i32 i32 i32)
     (local i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32)
-    global.get 0
-    local.set 3
-    i32.const 32
-    local.set 4
-    local.get 3
-    local.get 4
-    i32.sub
-    local.set 5
-    local.get 5
-    global.set 0
-    local.get 5
     local.get 0
-    i32.store offset=28
-    local.get 5
     local.get 1
-    i32.store offset=24
-    local.get 5
     local.get 2
-    i32.store offset=20
-    i32.const 0
-    local.set 6
-    local.get 5
-    local.get 6
-    i32.store offset=16
-    block  ;; label = @1
-      loop  ;; label = @2
-        local.get 5
-        i32.load offset=16
-        local.set 7
-        local.get 5
-        i32.load offset=20
-        local.set 8
-        local.get 7
-        local.get 8
-        i32.lt_u
-        local.set 9
-        i32.const 1
-        local.set 10
-        local.get 9
-        local.get 10
-        i32.and
-        local.set 11
-        local.get 11
-        i32.eqz
-        br_if 1 (;@1;)
-        local.get 5
-        i32.load offset=24
-        local.set 12
-        local.get 5
-        i32.load offset=16
-        local.set 13
-        local.get 12
-        local.get 13
-        i32.add
-        local.set 14
-        local.get 14
-        call 52
-        local.set 15
-        local.get 5
-        local.get 15
-        i32.store8 offset=15
-        local.get 5
-        i32.load offset=28
-        local.set 16
-        local.get 5
-        i32.load offset=16
-        local.set 17
-        local.get 16
-        local.get 17
-        i32.add
-        local.set 18
-        local.get 5
-        i32.load8_u offset=15
-        local.set 19
-        i32.const 255
-        local.set 20
-        local.get 19
-        local.get 20
-        i32.and
-        local.set 21
-        local.get 18
-        local.get 21
-        call 55
-        local.get 5
-        i32.load offset=16
-        local.set 22
-        i32.const 1
-        local.set 23
-        local.get 22
-        local.get 23
-        i32.add
-        local.set 24
-        local.get 5
-        local.get 24
-        i32.store offset=16
-        br 0 (;@2;)
-      end
-      unreachable
-    end
-    i32.const 32
-    local.set 25
-    local.get 5
-    local.get 25
-    i32.add
-    local.set 26
-    local.get 26
-    global.set 0
-    return)
+    memory.copy 1 0)
   (func (;62;) (type 6) (param i32 i32 i32)
     (local i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32)
-    global.get 0
-    local.set 3
-    i32.const 32
-    local.set 4
-    local.get 3
-    local.get 4
-    i32.sub
-    local.set 5
-    local.get 5
-    global.set 0
-    local.get 5
     local.get 0
-    i32.store offset=28
-    local.get 5
     local.get 1
-    i32.store offset=24
-    local.get 5
     local.get 2
-    i32.store offset=20
-    i32.const 0
-    local.set 6
-    local.get 5
-    local.get 6
-    i32.store offset=16
-    block  ;; label = @1
-      loop  ;; label = @2
-        local.get 5
-        i32.load offset=16
-        local.set 7
-        local.get 5
-        i32.load offset=20
-        local.set 8
-        local.get 7
-        local.get 8
-        i32.lt_u
-        local.set 9
-        i32.const 1
-        local.set 10
-        local.get 9
-        local.get 10
-        i32.and
-        local.set 11
-        local.get 11
-        i32.eqz
-        br_if 1 (;@1;)
-        local.get 5
-        i32.load offset=24
-        local.set 12
-        local.get 5
-        i32.load offset=16
-        local.set 13
-        local.get 12
-        local.get 13
-        i32.add
-        local.set 14
-        local.get 14
-        call 54
-        local.set 15
-        local.get 5
-        local.get 15
-        i32.store8 offset=15
-        local.get 5
-        i32.load offset=28
-        local.set 16
-        local.get 5
-        i32.load offset=16
-        local.set 17
-        local.get 16
-        local.get 17
-        i32.add
-        local.set 18
-        local.get 5
-        i32.load8_u offset=15
-        local.set 19
-        i32.const 255
-        local.set 20
-        local.get 19
-        local.get 20
-        i32.and
-        local.set 21
-        local.get 18
-        local.get 21
-        call 53
-        local.get 5
-        i32.load offset=16
-        local.set 22
-        i32.const 1
-        local.set 23
-        local.get 22
-        local.get 23
-        i32.add
-        local.set 24
-        local.get 5
-        local.get 24
-        i32.store offset=16
-        br 0 (;@2;)
-      end
-      unreachable
-    end
-    i32.const 32
-    local.set 25
-    local.get 5
-    local.get 25
-    i32.add
-    local.set 26
-    local.get 26
-    global.set 0
-    return)
+    memory.copy 0 1)
   (func (;63;) (type 0) (param i32) (result i32)
     (local i32 i32 i32 i32)
     global.get 0

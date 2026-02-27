@@ -173,6 +173,17 @@ int c_png_decode_staged(size_t png_len)
     return 0;
 }
 
+__attribute__((export_name("c_png_decode_from_mem0")))
+int c_png_decode_from_mem0(const unsigned char *src_mem0, size_t png_len)
+{
+    if (src_mem0 == NULL)
+        return -210;
+    if (png_len == 0 || png_len > BENCH_MAX_ENCODED)
+        return -211;
+    memcpy(bench_png_staging, src_mem0, png_len);
+    return c_png_decode_staged(png_len);
+}
+
 __attribute__((export_name("c_get_last_error_stage")))
 int c_get_last_error_stage(void)
 {

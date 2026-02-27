@@ -17,6 +17,7 @@
 2. 벤치:
    - `./run_bench.sh`
    - 또는 단일 실행: `python3 run_bench_pngsuite.py mem0|mem1|sfi`
+   - 기본은 PNG 4개만 실행(`PNG_FILE_LIMIT=4`), 전체 실행은 `PNG_FILE_LIMIT=0`
 
 결과:
 - raw run CSV:
@@ -29,6 +30,7 @@
 ## 필수 의존성
 
 - 빌드 툴: `clang-18`, `llvm-link-18`, `llc-18`, `opt-18`, `wasm-ld`, `wasm-opt`
+  - mem1은 커스텀 Binaryen 권장: `../binaryen/build/bin/wasm-opt` (`--Mem1RewritePass` 포함)
 - 벤치 런타임: Python `wasmtime` 모듈
 - 정적 라이브러리: (없음, source compile)
 - Rust:

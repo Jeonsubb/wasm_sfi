@@ -13,6 +13,7 @@ except ImportError:
 ROOT = Path(__file__).resolve().parent
 PNGSUITE_DIR = Path(os.environ.get("PNGSUITE_DIR", ROOT / "data" / "pngsuite"))
 RUNS = int(os.environ.get("BENCH_RUNS", "5"))
+PNG_FILE_LIMIT = int(os.environ.get("PNG_FILE_LIMIT", "4"))
 
 
 def list_png_files(base: Path):
@@ -211,6 +212,7 @@ def run_one(module, engine, png_path: Path, run_idx: int, variant: str):
 def parse_args():
     p = argparse.ArgumentParser()
     p.add_argument("variant", choices=["mem0", "mem1", "sfi"])
+    p.add_argument("--limit", type=int, default=PNG_FILE_LIMIT, help="number of PNG files to run (0: all)")
     return p.parse_args()
 
 
@@ -229,6 +231,8 @@ def main():
         raise SystemExit(f"missing: {wasm}")
 
     png_files = list_png_files(PNGSUITE_DIR)
+    if args.limit > 0:
+        png_files = png_files[: args.limit]
     if not png_files:
         raise SystemExit(f"no png files found under: {PNGSUITE_DIR}")
 

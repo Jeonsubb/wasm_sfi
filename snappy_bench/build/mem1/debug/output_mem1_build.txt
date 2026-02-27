@@ -291,5 +291,5 @@
 === [05a] llc: combined.bc -> combined.o ===
 === [05b] wasm-ld: add mem1 runtime ===
 === [05c] wasm2wat: combined_raw.wat (optional) ===
-=== [06] Binaryen: Mem1RewritePass ===
-Unknown option '--enable-multimemory'
+=== [06] Binaryen: mem1-rewrite + mem1-inline-memcpy ===
+Unknown option '--mem1-rewrite'

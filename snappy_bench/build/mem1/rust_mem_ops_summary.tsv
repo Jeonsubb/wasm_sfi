@@ -1,0 +1,17 @@
+func_idx	export	mem0_load	mem1_load	mem0_store	mem1_store	call___memcpy_0_to_1	call___memcpy_1_to_0	total_mem_ops
+1	bench_prepare	0	0	4	0	0	0	4
+2	bench_fill_target_from_pool	0	1	0	2	0	0	3
+3	bench_snappy_compress	4	0	6	0	0	0	10
+7	bench_snappy_uncompress	2	0	6	0	0	0	8
+9	bench_verify_compress	2	0	0	0	0	0	2
+10	bench_get_compressed_len	1	0	0	0	0	0	1
+11	bench_verify_uncompress	2	0	0	0	0	0	2
+13	bench_debug_uncomp_compressed_ptr	1	0	0	0	0	0	1
+14	bench_debug_uncomp_compressed_len	1	0	0	0	0	0	1
+15	bench_debug_uncomp_dst_ptr	1	0	0	0	0	0	1
+16	bench_debug_uncomp_dst_len	1	0	0	0	0	0	1
+17	bench_debug_uncomp_last_ret	1	0	0	0	0	0	1
+18	bench_debug_first_mismatch	2	0	0	0	0	0	2
+19	bench_debug_target_byte_at	1	0	0	0	0	0	1
+20	bench_debug_uncompressed_byte_at	1	0	0	0	0	0	1
+21	rust_begin_unwind	0	0	0	0	0	0	0

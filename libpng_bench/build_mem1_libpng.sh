@@ -14,7 +14,13 @@ PASS_MARK_SO="$PASS_DIR/build/libMarkMem1FFI.so"
 PASS_NOP_NORMAL_SO="$PASS_DIR/build/libInsertNopGrow.so"
 INJECT_SO="$PASS_DIR/build/libInjectMem1Markers.so"
 RUNTIME_A="$MEM1_ROOT/build/mem1_runtime.a"
-WASM_OPT_BIN="${WASM_OPT_BIN:-wasm-opt}"
+if [[ -z "${WASM_OPT_BIN:-}" ]]; then
+  if [[ -x "$ROOT/../binaryen/build/bin/wasm-opt" ]]; then
+    WASM_OPT_BIN="$ROOT/../binaryen/build/bin/wasm-opt"
+  else
+    WASM_OPT_BIN="wasm-opt"
+  fi
+fi
 
 LIBPNG_SRC_DIR="${LIBPNG_SRC_DIR:-$ROOT/vendor/libpng-src}"
 ZLIB_SRC_DIR="${ZLIB_SRC_DIR:-$ROOT/vendor/zlib-src}"
@@ -217,6 +223,48 @@ if [[ "${SKIP_FIX_MEM1_DEFAULT_LOADS:-0}" != "1" ]] && \
     --wasm "$FINAL_WASM" \
     --min-explicit1 "${FIX_MEM1_MIN_EXPLICIT1:-1}" \
     --min-ratio "${FIX_MEM1_MIN_RATIO:-0.0}"
+fi
+
+# Workaround for known mem1 decode-path miss in c_png_decode_staged:
+# ensure two stack init stores are explicitly directed to memory 1.
+if command -v wasm2wat >/dev/null 2>&1 && command -v wat2wasm >/dev/null 2>&1; then
+  TMP_WAT="$OUT_DIR/final_mem1.autofix.wat"
+  wasm2wat --enable-multi-memory "$FINAL_WASM" -o "$TMP_WAT"
+  python3 - "$TMP_WAT" <<'PY'
+import sys
+from pathlib import Path
+
+wat = Path(sys.argv[1])
+lines = wat.read_text().splitlines()
+start = end = None
+for i, line in enumerate(lines):
+    if line.startswith("  (func (;25;)"):
+        start = i
+    elif start is not None and line.startswith("  (func (;"):
+        end = i
+        break
+if start is None:
+    print("[mem1-autofix] func 25 not found; skip")
+    sys.exit(0)
+if end is None:
+    end = len(lines)
+
+patched = 0
+for i in range(start, end):
+    s = lines[i]
+    if s.strip() == "i32.store16":
+        lines[i] = s.replace("i32.store16", "i32.store16 (memory 1)")
+        patched += 1
+    elif s.strip() == "i64.store offset=16440":
+        lines[i] = s.replace("i64.store offset=16440", "i64.store (memory 1) offset=16440")
+        patched += 1
+
+if patched:
+    wat.write_text("\n".join(lines) + "\n")
+print(f"[mem1-autofix] patched={patched}")
+PY
+  wat2wasm --enable-multi-memory "$TMP_WAT" -o "$FINAL_WASM"
+  rm -f "$TMP_WAT"
 fi
 
 command -v wasm2wat >/dev/null 2>&1 && wasm2wat --enable-multi-memory "$FINAL_WASM" -o "$FINAL_WAT"

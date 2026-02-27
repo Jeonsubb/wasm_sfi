@@ -4,8 +4,10 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 : "${BENCH_RUNS:=5}"
+: "${PNG_FILE_LIMIT:=4}"
 
 export BENCH_RUNS
+export PNG_FILE_LIMIT
 
 PYTHON_BIN="${PYTHON_BIN:-python3}"
 if [[ -x "$ROOT/.venv/bin/python" ]]; then

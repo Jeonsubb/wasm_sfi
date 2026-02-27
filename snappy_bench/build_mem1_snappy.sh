@@ -25,6 +25,13 @@ PASS_MARK_SO="$PASS_DIR/build/libMarkMem1FFI.so"
 PASS_NOP_NORMAL_SO="$PASS_DIR/build/libInsertNopGrow.so" 
 INJECT_SO="$PASS_DIR/build/libInjectMem1Markers.so"
 RUNTIME_A="$MEM1_ROOT/build/mem1_runtime.a"
+if [[ -z "${WASM_OPT_BIN:-}" ]]; then
+  if [[ -x "$ROOT/../binaryen/build/bin/wasm-opt" ]]; then
+    WASM_OPT_BIN="$ROOT/../binaryen/build/bin/wasm-opt"
+  else
+    WASM_OPT_BIN="wasm-opt"
+  fi
+fi
 
 mkdir -p "$OUT_DIR" "$PASS_DIR/build" "$DEBUG_DIR"
 
@@ -46,6 +53,7 @@ COMBINED_RAW_WAT="$OUT_DIR/combined_mem1_raw.wat"
 FINAL_WASM="$OUT_DIR/final_mem1.wasm"
 FINAL_WAT="$OUT_DIR/final_mem1.wat"
 DEBUG_DCMP="$DEBUG_DIR/final_mem1.dcmp"
+MEM1_REWRITE_WASM="$OUT_DIR/final_mem1.rewrite.wasm"
 
 INTERMEDIATE_FILES=(
   "$C_FFI_BC"
@@ -60,6 +68,7 @@ INTERMEDIATE_FILES=(
   "$COMBINED_O"
   "$COMBINED_RAW_WASM"
   "$COMBINED_RAW_WAT"
+  "$MEM1_REWRITE_WASM"
   # "$DEBUG_DCMP"
   # "$LOG_FILE"
 )
@@ -172,8 +181,13 @@ wasm-ld --no-entry --export-all --no-gc-sections \
 echo "=== [05c] wasm2wat: combined_raw.wat (optional) ==="
 command -v wasm2wat >/dev/null 2>&1 && wasm2wat --enable-multi-memory "$COMBINED_RAW_WASM" -o "$COMBINED_RAW_WAT"
 
-echo "=== [06] Binaryen: Mem1RewritePass ==="
-wasm-opt "$COMBINED_RAW_WASM" --enable-multimemory --Mem1RewritePass -o "$FINAL_WASM"
+echo "=== [06] Binaryen: mem1-rewrite + mem1-inline-memcpy ==="
+"$WASM_OPT_BIN" "$COMBINED_RAW_WASM" --enable-multimemory --enable-bulk-memory \
+  --mem1-rewrite \
+  -o "$MEM1_REWRITE_WASM"
+"$WASM_OPT_BIN" "$MEM1_REWRITE_WASM" --enable-multimemory --enable-bulk-memory \
+  --mem1-inline-memcpy \
+  -o "$FINAL_WASM"
 
 if command -v wasm2wat >/dev/null 2>&1 && command -v wat2wasm >/dev/null 2>&1 && [[ -f "$MEM1_ROOT/tools/fix_mem1_default_loads.py" ]]; then
   echo "=== [06a] post-fix: normalize implicit default load ops to memory index 1 (mem1-heavy funcs) ==="

@@ -11,19 +11,18 @@ static mut BENCH_ENCODED_LEN: usize = 0;
 static mut BENCH_DECODED_BYTES: usize = 0;
 static mut BENCH_DECODED_WIDTH: usize = 0;
 static mut BENCH_DECODED_HEIGHT: usize = 0;
+static mut BENCH_ENCODED_BUF: [u8; BENCH_MAX_ENCODED] = [0; BENCH_MAX_ENCODED];
 
 extern "C" {
-    fn c_png_decode_staged(png_len: usize) -> i32;
+    fn c_png_decode_from_mem0(src_mem0: *const u8, png_len: usize) -> i32;
     fn c_get_decoded_bytes() -> usize;
     fn c_get_decoded_width() -> usize;
     fn c_get_decoded_height() -> usize;
-    fn c_get_staging_ptr() -> usize;
-    fn bench_set_c_staging_byte(offset: usize, value: u32) -> i32;
 }
 
 #[no_mangle]
 pub extern "C" fn bench_get_staging_ptr() -> usize {
-    unsafe { c_get_staging_ptr() }
+    unsafe { BENCH_ENCODED_BUF.as_ptr() as usize }
 }
 
 #[no_mangle]
@@ -37,7 +36,10 @@ pub extern "C" fn bench_set_staging_byte(offset: u32, value: u32) -> i32 {
     if idx >= BENCH_MAX_ENCODED {
         return -180;
     }
-    unsafe { bench_set_c_staging_byte(idx, value & 0xff) }
+    unsafe {
+        BENCH_ENCODED_BUF[idx] = (value & 0xff) as u8;
+    }
+    0
 }
 
 #[no_mangle]
@@ -46,8 +48,7 @@ pub extern "C" fn bench_get_staging_byte(offset: u32) -> u32 {
     if idx >= BENCH_MAX_ENCODED {
         return 0;
     }
-    let ptr = unsafe { c_get_staging_ptr() } as *const u8;
-    unsafe { ptr.add(idx).read() as u32 }
+    unsafe { BENCH_ENCODED_BUF[idx] as u32 }
 }
 
 #[no_mangle]
@@ -77,7 +78,7 @@ pub extern "C" fn bench_png_decode_external() -> i32 {
         return -171;
     }
 
-    let ret = unsafe { c_png_decode_staged(encoded_len) };
+    let ret = unsafe { c_png_decode_from_mem0(BENCH_ENCODED_BUF.as_ptr(), encoded_len) };
     if ret != 0 {
         return ret;
     }

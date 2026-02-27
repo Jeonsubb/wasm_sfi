@@ -43,9 +43,9 @@ export function bench_prepare(a:int):int { // func1
   var b:int = -121;
   if (a >= 4194305) goto B_b;
   var c:int = mem1_alloc(a);
-  memcpy_0_to_1(c, 1568, a);
+  memory_copy(c, 1568, a);
   b = bench_fill_target_from_pool(c, a);
-  memcpy_1_to_0(1568, c, a);
+  memory_copy(1568, c, a);
   mem1_free(c);
   if (b) goto B_b;
   b = 0;
@@ -132,9 +132,9 @@ export function bench_snappy_compress(a:int):int { // func3
   if (0[3320894]:int != a) goto B_a;
   if (0[13283592]:ubyte) goto B_c;
   d = mem1_alloc(12);
-  memcpy_0_to_1(d, 13283580, 12);
+  memory_copy(d, 13283580, 12);
   e = snappy_init_env_with_len(d, 12);
-  memcpy_1_to_0(13283580, d, 12);
+  memory_copy(13283580, d, 12);
   mem1_free(d);
   if (e) goto B_a;
   0[13283592]:byte = 1;
@@ -146,21 +146,21 @@ export function bench_snappy_compress(a:int):int { // func3
   0[3320891]:int = 0;
   b[3] = d;
   c = mem1_alloc(12);
-  memcpy_0_to_1(c, 13283580, 12);
+  memory_copy(c, 13283580, 12);
   e = mem1_alloc(a);
-  memcpy_0_to_1(e, 1568, a);
+  memory_copy(e, 1568, a);
   var f:int = mem1_alloc(d);
-  memcpy_0_to_1(f, 4195872, d);
+  memory_copy(f, 4195872, d);
   var g:int = mem1_alloc(4);
-  memcpy_0_to_1(g, b + 12, 4);
+  memory_copy(g, b + 12, 4);
   var h:int = snappy_compress_with_len(c, 12, e, a, f, d, g, 4);
-  memcpy_1_to_0(13283580, c, 12);
+  memory_copy(13283580, c, 12);
   mem1_free(c);
-  memcpy_1_to_0(1568, e, a);
+  memory_copy(1568, e, a);
   mem1_free(e);
-  memcpy_1_to_0(4195872, f, d);
+  memory_copy(4195872, f, d);
   mem1_free(f);
-  memcpy_1_to_0(b + 12, g, 4);
+  memory_copy(b + 12, g, 4);
   mem1_free(g);
   c = -94;
   if (h) goto B_a;
@@ -210,13 +210,13 @@ export function bench_snappy_uncompress(a:int):int { // func7
   0[3320902]:int = a;
   0[3320903]:int = 0;
   var d:int = mem1_alloc(c);
-  memcpy_0_to_1(d, 4195872, c);
+  memory_copy(d, 4195872, c);
   var e:int = mem1_alloc(a);
-  memcpy_0_to_1(e, 9089258, a);
+  memory_copy(e, 9089258, a);
   b = snappy_uncompress_with_len(d, c, e, a);
-  memcpy_1_to_0(4195872, d, c);
+  memory_copy(4195872, d, c);
   mem1_free(d);
-  memcpy_1_to_0(9089258, e, a);
+  memory_copy(9089258, e, a);
   mem1_free(e);
   0[3320903]:int = b;
   label B_b:
@@ -1390,87 +1390,11 @@ export function mem1_free(a:int) { // func60
 }
 
 export function memcpy_0_to_1(a:int, b:int, c:int) { // func61
-  var d:int = g_a;
-  var e:int = 32;
-  var f:int = d - e;
-  g_a = f;
-  f[7]:int = a;
-  f[6]:int = b;
-  f[5]:int = c;
-  var g:int = 0;
-  f[4]:int = g;
-  loop L_b {
-    var h:int = f[4]:int;
-    var i:int = f[5]:int;
-    var j:int = h < i;
-    var k:int = 1;
-    var l:int = j & k;
-    if (eqz(l)) goto B_a;
-    var m:int = f[6]:int;
-    var n:int = f[4]:int;
-    var o:int = m + n;
-    var p:int = mem0_load8(o);
-    f[15]:byte = p;
-    var q:int = f[7]:int;
-    var r:int = f[4]:int;
-    var s:int = q + r;
-    var t:int = f[15]:ubyte;
-    var u:int = 255;
-    var v:int = t & u;
-    mem1_store8(s, v);
-    var w:int = f[4]:int;
-    var x:int = 1;
-    var y:int = w + x;
-    f[4]:int = y;
-    continue L_b;
-  }
-  unreachable;
-  label B_a:
-  var z:int = 32;
-  var aa:int = f + z;
-  g_a = aa;
+  memory_copy(a, b, c)
 }
 
 export function memcpy_1_to_0(a:int, b:int, c:int) { // func62
-  var d:int = g_a;
-  var e:int = 32;
-  var f:int = d - e;
-  g_a = f;
-  f[7]:int = a;
-  f[6]:int = b;
-  f[5]:int = c;
-  var g:int = 0;
-  f[4]:int = g;
-  loop L_b {
-    var h:int = f[4]:int;
-    var i:int = f[5]:int;
-    var j:int = h < i;
-    var k:int = 1;
-    var l:int = j & k;
-    if (eqz(l)) goto B_a;
-    var m:int = f[6]:int;
-    var n:int = f[4]:int;
-    var o:int = m + n;
-    var p:int = mem1_load8(o);
-    f[15]:byte = p;
-    var q:int = f[7]:int;
-    var r:int = f[4]:int;
-    var s:int = q + r;
-    var t:int = f[15]:ubyte;
-    var u:int = 255;
-    var v:int = t & u;
-    mem0_store8(s, v);
-    var w:int = f[4]:int;
-    var x:int = 1;
-    var y:int = w + x;
-    f[4]:int = y;
-    continue L_b;
-  }
-  unreachable;
-  label B_a:
-  var z:int = 32;
-  var aa:int = f + z;
-  g_a = aa;
+  memory_copy(a, b, c)
 }
 
 export function mem1_ro_ptr(a:int):int { // func63
