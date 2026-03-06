@@ -11,8 +11,8 @@ typedef __SIZE_TYPE__ size_t;
 #include "../support/string.h"
 #include <png.h>
 
-#define BENCH_MAX_RAW (1u << 21) /* 2 MiB */
-#define BENCH_MAX_ENCODED (BENCH_MAX_RAW + (BENCH_MAX_RAW / 8) + 8192)
+#define BENCH_MAX_RAW (80u * 1024u * 1024u) /* 80 MiB decoded RGBA ceiling */
+#define BENCH_MAX_ENCODED (1u << 24) /* 16 MiB input PNG ceiling */
 
 static unsigned char bench_png_staging[BENCH_MAX_ENCODED];
 static unsigned char bench_decoded_rgba[BENCH_MAX_RAW];
@@ -27,6 +27,18 @@ typedef struct {
     size_t png_len;
     size_t cursor;
 } bench_png_reader_state;
+
+static int bench_is_png_sig8(const unsigned char sig[8])
+{
+    return sig[0] == 0x89 &&
+           sig[1] == 0x50 &&
+           sig[2] == 0x4e &&
+           sig[3] == 0x47 &&
+           sig[4] == 0x0d &&
+           sig[5] == 0x0a &&
+           sig[6] == 0x1a &&
+           sig[7] == 0x0a;
+}
 
 static void bench_png_read_cb(png_structp png_ptr, png_bytep out, png_size_t len)
 {
@@ -83,11 +95,10 @@ int c_png_decode_staged(size_t png_len)
     for (size_t i = 0; i < 8; i++) {
         sig[i] = bench_png_staging[i];
     }
-    if (png_sig_cmp((png_const_bytep)sig, 0, 8) != 0)
+    if (!bench_is_png_sig8(sig))
         return -215;
 
-    char version[] = "1.8.0.git";
-    png_structp png_ptr = png_create_read_struct(version, NULL, NULL, NULL);
+    png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if (png_ptr == NULL) {
         bench_last_error_stage = 1;
         return -220;
@@ -154,16 +165,17 @@ int c_png_decode_staged(size_t png_len)
         return -172;
     }
 
-    png_bytep rows[4096];
-    if (out_h > 4096u) {
+    png_bytep *rows = (png_bytep *)malloc((size_t)out_h * sizeof(png_bytep));
+    if (rows == NULL) {
         bench_last_error_stage = 7;
         png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-        return -223;
+        return -224;
     }
     for (png_uint_32 y = 0; y < out_h; y++) {
         rows[y] = bench_decoded_rgba + ((size_t)y * (size_t)rowbytes);
     }
     png_read_image(png_ptr, rows);
+    free(rows);
     png_read_end(png_ptr, NULL);
     png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 

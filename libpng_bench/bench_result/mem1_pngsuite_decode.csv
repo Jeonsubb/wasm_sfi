@@ -1,41 +1,41 @@
 file,variant,run,png_bytes,decoded_bytes,width,height,us,compression_ratio,ret
-abstract-shape-3d-glass-object.png,mem1,0,1021109,,,,ERR,,decode_exc:error while executing at wasm backtrace:     0:  0x2254a - <unknown>!<wasm function 420>     1:  0x1c0c3 - <unknown>!<wasm function 362>     2:   0x408c - <unknown>!<wasm function 46>     3:   0x3628 - <unknown>!<wasm function 25>     4:   0x3162 - <unknown>!<wasm function 7>     5:   0x30e7 - <unknown>!<wasm function 6>  Caused by:     0: memory fault at wasm address 0x794756 in linear memory of size 0x6a0000     1: wasm trap: out of bounds memory access
-abstract-shape-3d-glass-object.png,mem1,1,1021109,,,,ERR,,decode_exc:error while executing at wasm backtrace:     0:  0x2254a - <unknown>!<wasm function 420>     1:  0x1c0c3 - <unknown>!<wasm function 362>     2:   0x408c - <unknown>!<wasm function 46>     3:   0x3628 - <unknown>!<wasm function 25>     4:   0x3162 - <unknown>!<wasm function 7>     5:   0x30e7 - <unknown>!<wasm function 6>  Caused by:     0: memory fault at wasm address 0x794756 in linear memory of size 0x6a0000     1: wasm trap: out of bounds memory access
-abstract-shape-3d-glass-object.png,mem1,2,1021109,,,,ERR,,decode_exc:error while executing at wasm backtrace:     0:  0x2254a - <unknown>!<wasm function 420>     1:  0x1c0c3 - <unknown>!<wasm function 362>     2:   0x408c - <unknown>!<wasm function 46>     3:   0x3628 - <unknown>!<wasm function 25>     4:   0x3162 - <unknown>!<wasm function 7>     5:   0x30e7 - <unknown>!<wasm function 6>  Caused by:     0: memory fault at wasm address 0x794756 in linear memory of size 0x6a0000     1: wasm trap: out of bounds memory access
-abstract-shape-3d-glass-object.png,mem1,3,1021109,,,,ERR,,decode_exc:error while executing at wasm backtrace:     0:  0x2254a - <unknown>!<wasm function 420>     1:  0x1c0c3 - <unknown>!<wasm function 362>     2:   0x408c - <unknown>!<wasm function 46>     3:   0x3628 - <unknown>!<wasm function 25>     4:   0x3162 - <unknown>!<wasm function 7>     5:   0x30e7 - <unknown>!<wasm function 6>  Caused by:     0: memory fault at wasm address 0x794756 in linear memory of size 0x6a0000     1: wasm trap: out of bounds memory access
-abstract-shape-3d-glass-object.png,mem1,4,1021109,,,,ERR,,decode_exc:error while executing at wasm backtrace:     0:  0x2254a - <unknown>!<wasm function 420>     1:  0x1c0c3 - <unknown>!<wasm function 362>     2:   0x408c - <unknown>!<wasm function 46>     3:   0x3628 - <unknown>!<wasm function 25>     4:   0x3162 - <unknown>!<wasm function 7>     5:   0x30e7 - <unknown>!<wasm function 6>  Caused by:     0: memory fault at wasm address 0x794756 in linear memory of size 0x6a0000     1: wasm trap: out of bounds memory access
-debian-logo.png,mem1,0,1206,9216,48,48,121.718,0.130859,0
-debian-logo.png,mem1,1,1206,9216,48,48,123.764,0.130859,0
-debian-logo.png,mem1,2,1206,9216,48,48,116.997,0.130859,0
-debian-logo.png,mem1,3,1206,9216,48,48,147.396,0.130859,0
-debian-logo.png,mem1,4,1206,9216,48,48,130.311,0.130859,0
-folder.png,mem1,0,179,1024,16,16,87.055,0.174805,0
-folder.png,mem1,1,179,1024,16,16,59.301,0.174805,0
-folder.png,mem1,2,179,1024,16,16,50.861,0.174805,0
-folder.png,mem1,3,179,1024,16,16,52.393,0.174805,0
-folder.png,mem1,4,179,1024,16,16,54.706,0.174805,0
-funny-german-shepherd-dog-3d-illustration.png,mem1,0,8143502,,,,ERR,,too_large:8143502>2367488
-funny-german-shepherd-dog-3d-illustration.png,mem1,1,8143502,,,,ERR,,too_large:8143502>2367488
-funny-german-shepherd-dog-3d-illustration.png,mem1,2,8143502,,,,ERR,,too_large:8143502>2367488
-funny-german-shepherd-dog-3d-illustration.png,mem1,3,8143502,,,,ERR,,too_large:8143502>2367488
-funny-german-shepherd-dog-3d-illustration.png,mem1,4,8143502,,,,ERR,,too_large:8143502>2367488
-icons8-c++-480.png,mem1,0,16002,,,,ERR,,decode_exc:error while executing at wasm backtrace:     0:   0xc4b5 - <unknown>!<wasm function 129>     1:  0x16ad9 - <unknown>!<wasm function 341>     2:  0x1cfed - <unknown>!<wasm function 366>     3:  0x1cabe - <unknown>!<wasm function 365>     4:   0x417b - <unknown>!<wasm function 48>     5:   0x36b6 - <unknown>!<wasm function 25>     6:   0x3162 - <unknown>!<wasm function 7>     7:   0x30e7 - <unknown>!<wasm function 6>  Caused by:     0: memory fault at wasm address 0x6a03dc in linear memory of size 0x6a0000     1: wasm trap: out of bounds memory access
-icons8-c++-480.png,mem1,1,16002,,,,ERR,,decode_exc:error while executing at wasm backtrace:     0:   0xc4b5 - <unknown>!<wasm function 129>     1:  0x16ad9 - <unknown>!<wasm function 341>     2:  0x1cfed - <unknown>!<wasm function 366>     3:  0x1cabe - <unknown>!<wasm function 365>     4:   0x417b - <unknown>!<wasm function 48>     5:   0x36b6 - <unknown>!<wasm function 25>     6:   0x3162 - <unknown>!<wasm function 7>     7:   0x30e7 - <unknown>!<wasm function 6>  Caused by:     0: memory fault at wasm address 0x6a03dc in linear memory of size 0x6a0000     1: wasm trap: out of bounds memory access
-icons8-c++-480.png,mem1,2,16002,,,,ERR,,decode_exc:error while executing at wasm backtrace:     0:   0xc4b5 - <unknown>!<wasm function 129>     1:  0x16ad9 - <unknown>!<wasm function 341>     2:  0x1cfed - <unknown>!<wasm function 366>     3:  0x1cabe - <unknown>!<wasm function 365>     4:   0x417b - <unknown>!<wasm function 48>     5:   0x36b6 - <unknown>!<wasm function 25>     6:   0x3162 - <unknown>!<wasm function 7>     7:   0x30e7 - <unknown>!<wasm function 6>  Caused by:     0: memory fault at wasm address 0x6a03dc in linear memory of size 0x6a0000     1: wasm trap: out of bounds memory access
-icons8-c++-480.png,mem1,3,16002,,,,ERR,,decode_exc:error while executing at wasm backtrace:     0:   0xc4b5 - <unknown>!<wasm function 129>     1:  0x16ad9 - <unknown>!<wasm function 341>     2:  0x1cfed - <unknown>!<wasm function 366>     3:  0x1cabe - <unknown>!<wasm function 365>     4:   0x417b - <unknown>!<wasm function 48>     5:   0x36b6 - <unknown>!<wasm function 25>     6:   0x3162 - <unknown>!<wasm function 7>     7:   0x30e7 - <unknown>!<wasm function 6>  Caused by:     0: memory fault at wasm address 0x6a03dc in linear memory of size 0x6a0000     1: wasm trap: out of bounds memory access
-icons8-c++-480.png,mem1,4,16002,,,,ERR,,decode_exc:error while executing at wasm backtrace:     0:   0xc4b5 - <unknown>!<wasm function 129>     1:  0x16ad9 - <unknown>!<wasm function 341>     2:  0x1cfed - <unknown>!<wasm function 366>     3:  0x1cabe - <unknown>!<wasm function 365>     4:   0x417b - <unknown>!<wasm function 48>     5:   0x36b6 - <unknown>!<wasm function 25>     6:   0x3162 - <unknown>!<wasm function 7>     7:   0x30e7 - <unknown>!<wasm function 6>  Caused by:     0: memory fault at wasm address 0x6a03dc in linear memory of size 0x6a0000     1: wasm trap: out of bounds memory access
-rust-logo-256x256-blk.png,mem1,0,5591,262144,256,256,585.028,0.021328,0
-rust-logo-256x256-blk.png,mem1,1,5591,262144,256,256,578.173,0.021328,0
-rust-logo-256x256-blk.png,mem1,2,5591,262144,256,256,571.741,0.021328,0
-rust-logo-256x256-blk.png,mem1,3,5591,262144,256,256,630.577,0.021328,0
-rust-logo-256x256-blk.png,mem1,4,5591,262144,256,256,563.605,0.021328,0
-ubuntu-logo-text.png,mem1,0,5278,94640,260,91,416.183,0.055769,0
-ubuntu-logo-text.png,mem1,1,5278,94640,260,91,438.933,0.055769,0
-ubuntu-logo-text.png,mem1,2,5278,94640,260,91,416.321,0.055769,0
-ubuntu-logo-text.png,mem1,3,5278,94640,260,91,449.068,0.055769,0
-ubuntu-logo-text.png,mem1,4,5278,94640,260,91,421.996,0.055769,0
-user-home.png,mem1,0,202,1024,16,16,61.918,0.197266,0
-user-home.png,mem1,1,202,1024,16,16,82.087,0.197266,0
-user-home.png,mem1,2,202,1024,16,16,87.940,0.197266,0
-user-home.png,mem1,3,202,1024,16,16,83.806,0.197266,0
-user-home.png,mem1,4,202,1024,16,16,58.837,0.197266,0
+abstract-shape-3d-glass-object.png,mem1,0,1021109,13112000,2000,1639,71135.731,0.077876,0
+abstract-shape-3d-glass-object.png,mem1,1,1021109,13112000,2000,1639,71263.336,0.077876,0
+abstract-shape-3d-glass-object.png,mem1,2,1021109,13112000,2000,1639,69864.732,0.077876,0
+abstract-shape-3d-glass-object.png,mem1,3,1021109,13112000,2000,1639,70317.183,0.077876,0
+abstract-shape-3d-glass-object.png,mem1,4,1021109,13112000,2000,1639,69974.885,0.077876,0
+debian-logo.png,mem1,0,1206,9216,48,48,128.595,0.130859,0
+debian-logo.png,mem1,1,1206,9216,48,48,129.669,0.130859,0
+debian-logo.png,mem1,2,1206,9216,48,48,129.399,0.130859,0
+debian-logo.png,mem1,3,1206,9216,48,48,108.319,0.130859,0
+debian-logo.png,mem1,4,1206,9216,48,48,122.777,0.130859,0
+folder.png,mem1,0,179,1024,16,16,83.275,0.174805,0
+folder.png,mem1,1,179,1024,16,16,68.811,0.174805,0
+folder.png,mem1,2,179,1024,16,16,53.085,0.174805,0
+folder.png,mem1,3,179,1024,16,16,64.735,0.174805,0
+folder.png,mem1,4,179,1024,16,16,66.127,0.174805,0
+funny-german-shepherd-dog-3d-illustration.png,mem1,0,8143502,74334520,4238,4385,344926.418,0.109552,0
+funny-german-shepherd-dog-3d-illustration.png,mem1,1,8143502,74334520,4238,4385,351925.633,0.109552,0
+funny-german-shepherd-dog-3d-illustration.png,mem1,2,8143502,74334520,4238,4385,340695.971,0.109552,0
+funny-german-shepherd-dog-3d-illustration.png,mem1,3,8143502,74334520,4238,4385,340441.355,0.109552,0
+funny-german-shepherd-dog-3d-illustration.png,mem1,4,8143502,74334520,4238,4385,338953.727,0.109552,0
+icons8-c++-480.png,mem1,0,16002,921600,480,480,2428.291,0.017363,0
+icons8-c++-480.png,mem1,1,16002,921600,480,480,2387.342,0.017363,0
+icons8-c++-480.png,mem1,2,16002,921600,480,480,2427.222,0.017363,0
+icons8-c++-480.png,mem1,3,16002,921600,480,480,2430.714,0.017363,0
+icons8-c++-480.png,mem1,4,16002,921600,480,480,2372.378,0.017363,0
+rust-logo-256x256-blk.png,mem1,0,5591,262144,256,256,533.915,0.021328,0
+rust-logo-256x256-blk.png,mem1,1,5591,262144,256,256,531.634,0.021328,0
+rust-logo-256x256-blk.png,mem1,2,5591,262144,256,256,520.937,0.021328,0
+rust-logo-256x256-blk.png,mem1,3,5591,262144,256,256,515.508,0.021328,0
+rust-logo-256x256-blk.png,mem1,4,5591,262144,256,256,570.869,0.021328,0
+ubuntu-logo-text.png,mem1,0,5278,94640,260,91,369.937,0.055769,0
+ubuntu-logo-text.png,mem1,1,5278,94640,260,91,403.227,0.055769,0
+ubuntu-logo-text.png,mem1,2,5278,94640,260,91,468.755,0.055769,0
+ubuntu-logo-text.png,mem1,3,5278,94640,260,91,411.837,0.055769,0
+ubuntu-logo-text.png,mem1,4,5278,94640,260,91,390.546,0.055769,0
+user-home.png,mem1,0,202,1024,16,16,56.397,0.197266,0
+user-home.png,mem1,1,202,1024,16,16,50.968,0.197266,0
+user-home.png,mem1,2,202,1024,16,16,61.819,0.197266,0
+user-home.png,mem1,3,202,1024,16,16,53.328,0.197266,0
+user-home.png,mem1,4,202,1024,16,16,47.176,0.197266,0

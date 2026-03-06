@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import csv
+import json
 import os
 import time
 from pathlib import Path
@@ -14,6 +15,8 @@ ROOT = Path(__file__).resolve().parent
 PNGSUITE_DIR = Path(os.environ.get("PNGSUITE_DIR", ROOT / "data" / "pngsuite"))
 RUNS = int(os.environ.get("BENCH_RUNS", "5"))
 PNG_FILE_LIMIT = int(os.environ.get("PNG_FILE_LIMIT", "4"))
+DUMP_DECODED = os.environ.get("DUMP_DECODED", "0") == "1"
+DUMP_DIR = Path(os.environ.get("DUMP_DIR", ROOT / "bench_result" / "decoded"))
 
 
 def list_png_files(base: Path):
@@ -47,6 +50,42 @@ def write_memory(memory, store, offset, data: bytes):
         memory.write(store, offset, data)
 
 
+def read_memory(memory, store, offset: int, size: int) -> bytes:
+    try:
+        data = memory.read(store, offset, offset + size)
+    except TypeError:
+        data = memory.read(store, offset, size)
+    return bytes(data)
+
+
+def dump_decoded_output(
+    variant: str,
+    file_name: str,
+    run_idx: int,
+    width: int,
+    height: int,
+    decoded_bytes: int,
+    payload: bytes,
+):
+    stem = Path(file_name).stem
+    out_dir = DUMP_DIR / variant
+    out_dir.mkdir(parents=True, exist_ok=True)
+    rgba_path = out_dir / f"{stem}.run{run_idx}.rgba"
+    meta_path = out_dir / f"{stem}.run{run_idx}.json"
+    rgba_path.write_bytes(payload)
+    meta = {
+        "file": file_name,
+        "variant": variant,
+        "run": run_idx,
+        "width": width,
+        "height": height,
+        "decoded_bytes": decoded_bytes,
+        "format": "rgba8",
+        "rgba_path": str(rgba_path),
+    }
+    meta_path.write_text(json.dumps(meta, ensure_ascii=False, indent=2))
+
+
 def err_text(exc: Exception) -> str:
     return " ".join(str(exc).splitlines())
 
@@ -61,11 +100,15 @@ def run_one(module, engine, png_path: Path, run_idx: int, variant: str):
     get_staging_cap = exports.get("bench_get_staging_cap")
     set_staging_byte = exports.get("bench_set_staging_byte")
     set_c_staging_byte = exports.get("bench_set_c_staging_byte")
+    get_c_staging_ptr = exports.get("c_get_staging_ptr")
     load_external = exports.get("bench_load_external_png")
     decode_external = exports.get("bench_png_decode_external")
     get_decoded_bytes = exports.get("bench_get_decoded_bytes")
     get_w = exports.get("bench_get_decoded_width")
     get_h = exports.get("bench_get_decoded_height")
+    get_decoded_ptr = exports.get("c_get_decoded_ptr")
+    mem1_load8 = exports.get("__mem1_load8")
+    memcpy_1_to_0 = exports.get("__memcpy_1_to_0")
 
     for fn_name, fn in [
         ("bench_get_staging_ptr", get_staging_ptr),
@@ -97,7 +140,17 @@ def run_one(module, engine, png_path: Path, run_idx: int, variant: str):
             "ret": f"too_large:{len(png_bytes)}>{staging_cap}",
         }
 
-    if set_staging_byte is not None or set_c_staging_byte is not None:
+    # SFI needs both Rust staging and C staging to receive bytes.
+    # If c_get_staging_ptr is available, bulk-write both regions.
+    use_setter = (variant == "sfi")
+
+    if variant == "sfi" and mem is not None and get_c_staging_ptr is not None:
+        c_staging_ptr = int(get_c_staging_ptr(store))
+        write_memory(mem, store, staging_ptr, png_bytes)
+        write_memory(mem, store, c_staging_ptr, png_bytes)
+    elif (not use_setter) and mem is not None:
+        write_memory(mem, store, staging_ptr, png_bytes)
+    elif set_staging_byte is not None or set_c_staging_byte is not None:
         for i, b in enumerate(png_bytes):
             for fn in (set_staging_byte, set_c_staging_byte):
                 if fn is None:
@@ -119,9 +172,7 @@ def run_one(module, engine, png_path: Path, run_idx: int, variant: str):
                         "ret": f"set_byte:{ret}",
                     }
     else:
-        if mem is None:
-            raise RuntimeError("missing export: memory")
-        write_memory(mem, store, staging_ptr, png_bytes)
+        raise RuntimeError("missing export: memory")
 
     try:
         ret = load_external(store, len(png_bytes))
@@ -194,6 +245,42 @@ def run_one(module, engine, png_path: Path, run_idx: int, variant: str):
     ratio = ""
     if decoded_bytes > 0:
         ratio = f"{(len(png_bytes) / decoded_bytes):.6f}"
+
+    if DUMP_DECODED and decoded_bytes > 0 and get_decoded_ptr is not None:
+        decoded_ptr = int(get_decoded_ptr(store))
+        payload = b""
+        if variant == "mem1":
+            if mem is not None and memcpy_1_to_0 is not None:
+                dst_mem0 = staging_ptr
+                chunk_cap = max(1, staging_cap)
+                parts = []
+                copied = 0
+                while copied < decoded_bytes:
+                    n = min(chunk_cap, decoded_bytes - copied)
+                    memcpy_1_to_0(store, dst_mem0, decoded_ptr + copied, n)
+                    parts.append(read_memory(mem, store, dst_mem0, n))
+                    copied += n
+                payload = b"".join(parts)
+            elif mem1_load8 is not None:
+                buf = bytearray(decoded_bytes)
+                for i in range(decoded_bytes):
+                    buf[i] = int(mem1_load8(store, decoded_ptr + i)) & 0xFF
+                payload = bytes(buf)
+            else:
+                raise RuntimeError("missing exports for mem1 dump (__memcpy_1_to_0 or __mem1_load8)")
+        else:
+            if mem is None:
+                raise RuntimeError("missing export: memory")
+            payload = read_memory(mem, store, decoded_ptr, decoded_bytes)
+        dump_decoded_output(
+            variant=variant,
+            file_name=png_path.name,
+            run_idx=run_idx,
+            width=width,
+            height=height,
+            decoded_bytes=decoded_bytes,
+            payload=payload,
+        )
 
     return {
         "file": str(png_path.name),

@@ -26,6 +26,8 @@ LIBPNG_SRC_DIR="${LIBPNG_SRC_DIR:-$ROOT/vendor/libpng-src}"
 ZLIB_SRC_DIR="${ZLIB_SRC_DIR:-$ROOT/vendor/zlib-src}"
 DEFAULT_CFLAGS_LIBPNG="-DNO_GZCOMPRESS -DNO_GZIP -DPNG_NO_STDIO_SUPPORTED -DPNG_NO_STDIO -I$ROOT/support -I$LIBPNG_SRC_DIR -I$ZLIB_SRC_DIR"
 CFLAGS_LIBPNG_EFFECTIVE="${CFLAGS_LIBPNG:-$DEFAULT_CFLAGS_LIBPNG}"
+MEM1_LINEAR_MEMORY_BYTES="${MEM1_LINEAR_MEMORY_BYTES:-268435456}"
+MEM1_SECONDARY_PAGES="${MEM1_SECONDARY_PAGES:-4096}"
 
 mkdir -p "$OUT_DIR" "$PASS_DIR/build" "$DEBUG_DIR"
 
@@ -195,6 +197,7 @@ echo "=== [05] Codegen + link ==="
 llc-18 -filetype=obj -march=wasm32 "$COMBINED_REWRITTEN_BC" -o "$COMBINED_O"
 
 wasm-ld --no-entry --export-all --no-gc-sections \
+  --initial-memory="$MEM1_LINEAR_MEMORY_BYTES" --max-memory="$MEM1_LINEAR_MEMORY_BYTES" \
   "$COMBINED_O" "$RUNTIME_A" -o "$COMBINED_RAW_WASM"
 
 command -v wasm2wat >/dev/null 2>&1 && wasm2wat --enable-multi-memory "$COMBINED_RAW_WASM" -o "$COMBINED_RAW_WAT"
@@ -225,43 +228,123 @@ if [[ "${SKIP_FIX_MEM1_DEFAULT_LOADS:-0}" != "1" ]] && \
     --min-ratio "${FIX_MEM1_MIN_RATIO:-0.0}"
 fi
 
-# Workaround for known mem1 decode-path miss in c_png_decode_staged:
-# ensure two stack init stores are explicitly directed to memory 1.
+# Workaround for known mem1 misses:
+# 1) c_png_decode_staged stack init stores
+# 2) remaining non-helper C funcs that still emit default-memory ops
 if command -v wasm2wat >/dev/null 2>&1 && command -v wat2wasm >/dev/null 2>&1; then
   TMP_WAT="$OUT_DIR/final_mem1.autofix.wat"
   wasm2wat --enable-multi-memory "$FINAL_WASM" -o "$TMP_WAT"
-  python3 - "$TMP_WAT" <<'PY'
+  python3 - "$TMP_WAT" "$MEM1_SECONDARY_PAGES" <<'PY'
 import sys
+import re
 from pathlib import Path
 
 wat = Path(sys.argv[1])
+mem1_pages = int(sys.argv[2])
 lines = wat.read_text().splitlines()
-start = end = None
-for i, line in enumerate(lines):
-    if line.startswith("  (func (;25;)"):
-        start = i
-    elif start is not None and line.startswith("  (func (;"):
-        end = i
-        break
-if start is None:
-    print("[mem1-autofix] func 25 not found; skip")
-    sys.exit(0)
-if end is None:
-    end = len(lines)
 
 patched = 0
-for i in range(start, end):
-    s = lines[i]
-    if s.strip() == "i32.store16":
-        lines[i] = s.replace("i32.store16", "i32.store16 (memory 1)")
+# Keep memory 1 large enough for bigger libpng staging/decoded buffers.
+for i, s in enumerate(lines):
+    st = s.strip()
+    if st.startswith("(memory") and "(;1;)" in st:
+        lines[i] = re.sub(r"\(memory.*\)", f"(memory (;1;) {mem1_pages} {mem1_pages})", st)
+        lines[i] = "  " + lines[i]
         patched += 1
-    elif s.strip() == "i64.store offset=16440":
-        lines[i] = s.replace("i64.store offset=16440", "i64.store (memory 1) offset=16440")
-        patched += 1
+        break
+
+# Build func index -> [start, end) line ranges.
+func_ranges = {}
+func_order = []
+for i, line in enumerate(lines):
+    m = re.match(r"^\s*\(func \(;(\d+);\)", line)
+    if m:
+        idx = int(m.group(1))
+        func_order.append((idx, i))
+for j, (idx, start) in enumerate(func_order):
+    end = func_order[j + 1][1] if j + 1 < len(func_order) else len(lines)
+    func_ranges[idx] = (start, end)
+
+# Build export name -> func index map.
+export_to_idx = {}
+for line in lines:
+    m = re.match(r'^\s*\(export "([^"]+)" \(func (\d+)\)\)', line)
+    if m:
+        export_to_idx[m.group(1)] = int(m.group(2))
+
+# Known non-helper mem0 leak candidates from static scan.
+target_exports = {
+    "c_png_decode_staged",
+    "deflate",
+    "deflateReset",
+    "deflateParams",
+    "inflateBack",
+    "inflate",
+    "png_convert_to_rfc1123_buffer",
+    "png_ascii_from_fixed",
+    "png_reciprocal2",
+    "png_image_free",
+    "png_warning_parameter_unsigned",
+    "png_warning_parameter_signed",
+    "png_get_bKGD",
+    "png_get_sBIT",
+    "png_get_tIME",
+    "png_read_transform_info",
+    "png_set_shift",
+    "png_set_background_fixed",
+    "png_set_quantize",
+    "png_init_read_transformations",
+    "png_set_bKGD",
+    "png_set_sBIT",
+    "png_set_tRNS",
+    "png_set_cHRM_XYZ_fixed",
+    "png_write_finish_row",
+    "_tr_tally",
+}
+
+target_func_idxs = set()
+missing_exports = []
+for name in sorted(target_exports):
+    idx = export_to_idx.get(name)
+    if idx is None:
+        missing_exports.append(name)
+    else:
+        target_func_idxs.add(idx)
+
+memop_re = re.compile(r"^(i(?:32|64)\.(?:load|store)[0-9A-Za-z_]*)(\b.*)$")
+
+def patch_func_memops(start: int, end: int) -> int:
+    local_patched = 0
+    for i in range(start, end):
+        s = lines[i]
+        st = s.strip()
+        if not st or "(memory " in st:
+            continue
+        m = memop_re.match(st)
+        if not m:
+            continue
+        op = m.group(1)
+        rest = m.group(2)
+        rest_l = rest.lstrip()
+        # Skip if memory immediate already exists in numeric or named form.
+        if re.match(r"^(?:\d+|\$[A-Za-z0-9_.-]+)\b", rest_l):
+            continue
+        indent = s[:len(s) - len(s.lstrip())]
+        lines[i] = f"{indent}{op} (memory 1){rest}"
+        local_patched += 1
+    return local_patched
+
+for idx in sorted(target_func_idxs):
+    rng = func_ranges.get(idx)
+    if rng is None:
+        continue
+    patched += patch_func_memops(rng[0], rng[1])
 
 if patched:
     wat.write_text("\n".join(lines) + "\n")
-print(f"[mem1-autofix] patched={patched}")
+print(f"[mem1-autofix] patched={patched} target_funcs={len(target_func_idxs)} missing_exports={len(missing_exports)}")
+if missing_exports:
+    print("[mem1-autofix] missing: " + ", ".join(sorted(missing_exports)))
 PY
   wat2wasm --enable-multi-memory "$TMP_WAT" -o "$FINAL_WASM"
   rm -f "$TMP_WAT"

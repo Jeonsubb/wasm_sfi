@@ -43,9 +43,11 @@ if [[ ! -f "$ZLIB_SRC_DIR/zlib.h" ]] || [[ ! -f "$ZLIB_SRC_DIR/deflate.c" ]]; th
   exit 1
 fi
 
-# Full libpng decode keeps static data below 2 pages, so include low memory.
-SFI_C_BASE=${SFI_C_BASE:-0}
-SFI_C_END=${SFI_C_END:-$((SFI_C_BASE + 256 * 65536))}
+# Align defaults with snappy SFI layout semantics:
+# - reserve first 2 wasm pages outside C sandbox
+# - keep larger C sandbox span for libpng workloads
+SFI_C_BASE=${SFI_C_BASE:-$((2 * 65536))}
+SFI_C_END=${SFI_C_END:-$((SFI_C_BASE + 4096 * 65536))}
 SFI_C_STACK_TOP=${SFI_C_STACK_TOP:-$SFI_C_END}
 SFI_C_HEAP_BASE=${SFI_C_HEAP_BASE:-$((SFI_C_BASE + 4096))}
 SFI_C_HEAP_END=${SFI_C_HEAP_END:-$SFI_C_END}
@@ -166,6 +168,7 @@ echo "[4] codegen + wasm link"
 llc-18 -filetype=obj -march=wasm32 "$COMBINED_SFI_BC" -o "$COMBINED_O"
 
 wasm-ld --no-entry --export-all --no-gc-sections \
+  --global-base="$SFI_C_BASE" \
   --initial-memory="$SFI_C_END" --max-memory="$SFI_C_END" \
   "$COMBINED_O" "$SFI_RUNTIME_A" -o "$COMBINED_RAW_WASM"
 

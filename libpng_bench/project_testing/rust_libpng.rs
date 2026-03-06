@@ -3,8 +3,8 @@
 
 use core::panic::PanicInfo;
 
-const BENCH_MAX_RAW: usize = 1 << 21; // 2 MiB
-const BENCH_MAX_ENCODED: usize = BENCH_MAX_RAW + (BENCH_MAX_RAW / 8) + 8192;
+const BENCH_MAX_RAW: usize = 80 * 1024 * 1024; // 80 MiB decoded RGBA ceiling
+const BENCH_MAX_ENCODED: usize = 1 << 24; // 16 MiB input PNG ceiling
 
 static mut BENCH_READY: bool = false;
 static mut BENCH_ENCODED_LEN: usize = 0;
